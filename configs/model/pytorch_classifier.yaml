@@ -1,0 +1,14 @@
+model:
+  name: pytorch-classifier
+  layers:
+    - out_features: 20
+      activation: relu
+      batch_norm: false
+      dropout: 0.0
+  output_activation: sigmoid
+training:
+  epochs: 50
+  learning_rate: 0.001
+  optimizer: adam
+  batch_size: 64
+  test_size: 0.2

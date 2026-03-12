@@ -1,0 +1,8 @@
+dataset:
+    name: compas-recidivism
+    url: https://api.openml.org/data/download/22111929/dataset
+download_location: src/data/datasets/downloads
+specs:
+    target: twoyearrecid
+    train_size: 80
+    train_only: False

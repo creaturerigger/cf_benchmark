@@ -1,0 +1,8 @@
+dataset:
+    name: german-credit
+    url: https://archive.ics.uci.edu/static/public/144/statlog+german+credit+data.zip
+download_location: src/data/datasets/downloads
+specs:
+    target: credit_risk
+    train_size: 80
+    train_only: False

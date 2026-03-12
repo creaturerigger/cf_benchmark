@@ -1,0 +1,21 @@
+dataset: adult
+
+model:
+  type: pytorch
+
+cf_method:
+  name: dice
+
+pool:
+  runs: 15
+  per_run: 5
+
+perturbation:
+  type: gaussian
+  sigma: 0.05
+  M: 20
+
+robustness:
+  alpha: 1
+  beta: 1
+  gamma: 0.5

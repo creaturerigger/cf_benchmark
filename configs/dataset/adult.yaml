@@ -1,0 +1,8 @@
+dataset:
+    name: adult-income
+    url: https://archive.ics.uci.edu/static/public/2/adult.zip
+download_location: src/data/datasets/downloads
+specs:
+    target: income
+    train_size: 80
+    train_only: False

@@ -1,0 +1,23 @@
+method:
+  name: dice
+  implementation: dice_ml
+  init_path: /Users/volk/Documents/bau24-25/thesis/repos/DiCE-X
+
+generation:
+  total_cfs: 5
+  desired_class: opposite
+  proximity_weight: 0.5
+  diversity_weight: 1.0
+
+search:
+  algorithm: genetic
+  max_iterations: 500
+  population_size: 50
+  stopping_threshold: 0.01
+
+constraints:
+  permitted_range: null
+  features_to_vary: all
+
+dice_x:
+  enabled: false

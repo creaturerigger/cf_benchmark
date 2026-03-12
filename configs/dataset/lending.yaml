@@ -1,0 +1,8 @@
+dataset:
+    name: lending-club
+    url: https://www.kaggle.com/api/v1/datasets/download/imsparsh/lending-club-loan-dataset-2007-2011
+download_location: src/data/datasets/downloads
+specs:
+    target: loan_status
+    train_size: 80
+    train_only: False
