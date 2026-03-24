@@ -3,7 +3,7 @@ import torch
 from src.utils.constants import InterventionDistanceType
 from typing import List
 
-class InterventionInstability:
+class InterventionStability:
     def __init__(self, cfs: torch.Tensor, cfs_prime: torch.Tensor) -> None:
         self.cfs = cfs
         self.cfs_prime = cfs_prime

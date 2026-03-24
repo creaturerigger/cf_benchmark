@@ -3,7 +3,7 @@ import torch.nn.functional as F
 from src.utils.constants import GeometricDistanceType
 
 
-class GeometricInstability:
+class GeometricStability:
     def __init__(self, cfs: torch.Tensor, cfs_prime: torch.Tensor):
         self.cfs = cfs
         self.cfs_prime = cfs_prime

@@ -102,8 +102,8 @@ cf_benchmark/
     │   ├── pool_builder.py           # CF pool generation & CSV persistence
     │   └── deduplicator.py           # Duplicate CF removal
     ├── robustness/
-    │   ├── geometric.py              # Geometric instability (L1, L2, L∞, Cosine, Mahalanobis)
-    │   ├── intervention.py           # Intervention instability (Jaccard, Dice–Sørensen)
+    │   ├── geometric.py              # Geometric stability (L1, L2, L∞, Cosine, Mahalanobis)
+    │   ├── intervention.py           # Intervention stability (Jaccard, Dice–Sørensen)
     │   ├── matcher.py                # CF matching logic
     │   └── score.py                  # Composite robustness scoring
     └── utils/
@@ -194,9 +194,9 @@ For each input instance, multiple counterfactual generation runs produce a **can
 
 Each candidate counterfactual is evaluated under a distribution of **perturbed inputs** in the neighbourhood of the original instance:
 
-- **Geometric Instability** — Measures the distance between the original CF and the CF derived from a perturbed input using L1, L2, L∞, Cosine, or Mahalanobis distance. Lower values indicate greater geometric stability.
+- **Geometric Stability** — Measures the distance between the original CF and the CF derived from a perturbed input using L1, L2, L∞, Cosine, or Mahalanobis distance. Lower values indicate greater geometric stability.
 
-- **Intervention Instability** — Measures the consistency of feature-level modifications (which features are changed) using Jaccard Index or Dice–Sørensen Coefficient. Higher overlap indicates greater intervention stability.
+- **Intervention Stability** — Measures the consistency of feature-level modifications (which features are changed) using Jaccard Index or Dice–Sørensen Coefficient. Higher overlap indicates greater intervention stability.
 
 ### Pareto Selection
 
