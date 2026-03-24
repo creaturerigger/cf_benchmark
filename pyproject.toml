@@ -5,13 +5,16 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.10.13"
 dependencies = [
+    "jsonschema>=4.26.0",
     "pandas>=2.3.3",
     "pytest>=9.0.2",
     "pyyaml>=6.0.3",
+    "raiutils>=0.4.2",
     "requests>=2.32.5",
     "scikit-learn>=1.7.2",
     "torch>=2.10.0",
     "torchvision>=0.25.0",
+    "tqdm>=4.67.3",
 ]
 
 [tool.setuptools.packages.find]
@@ -24,4 +27,4 @@ dev = [
 ]
 
 [tool.pytest.ini_options]
-pythonpath = ["."]
+pythonpath = [".", "/Users/volk/Documents/bau24-25/thesis/repos/DiCE-X"]

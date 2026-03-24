@@ -17,3 +17,8 @@ def get_method_class(name: str) -> type[BaseCounterfactualGenerationMethod]:
     if name not in METHOD_REGISTRY:
         raise ValueError(f"The method {name} is not found.")
     return METHOD_REGISTRY[name]
+
+
+def create_method(cfg: dict, *args, **kwargs) -> BaseCounterfactualGenerationMethod:
+    name = cfg["method"]["name"]
+    return get_method_class(name)(cfg, *args, **kwargs)

@@ -10,7 +10,7 @@ generation:
   diversity_weight: 1.0
 
 search:
-  algorithm: genetic
+  algorithm: gradient
   max_iterations: 500
   population_size: 50
   stopping_threshold: 0.01
