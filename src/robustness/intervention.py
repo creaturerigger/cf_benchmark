@@ -21,10 +21,24 @@ class InterventionStability:
         pass
 
     def _preprocess_for_computation(self, cfs: torch.Tensor,
+                                    cfs_prime: torch.Tensor,
+                                    encoded_continuous_feature_indices: list[int],
                                     encoded_categorical_feature_indices: List[List[int]]):
 
         cat_col_indices = [col for group in encoded_categorical_feature_indices for col in group]
+        cfs_cat_cols = cfs[:, cat_col_indices]
+        cfs_prime_cat_cols = cfs_prime[:, cat_col_indices]
 
+        cfs_cont_one_hot = self._binarize_continuous_features(cfs=cfs,
+                                                              encoded_continuous_feature_indices=encoded_continuous_feature_indices)
+        
+        cfs_prime_cont_one_hot = self._binarize_continuous_features(cfs=cfs_prime,
+                                                                    encoded_continuous_feature_indices=encoded_continuous_feature_indices)
+
+        cfs_preprocessed = torch.cat([cfs_cont_one_hot, cfs_cat_cols], dim=1)
+        cfs_prime_preprocessed = torch.cat([cfs_prime_cont_one_hot, cfs_prime_cat_cols], dim=1)
+
+        return cfs_preprocessed, cfs_prime_preprocessed
 
 
     def _binarize_continuous_features(self, cfs: torch.Tensor,

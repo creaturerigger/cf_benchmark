@@ -229,7 +229,7 @@ If you use this framework in your research, please cite:
 
 ```bibtex
 @InProceedings{cf_benchmark_framework_bakir_2026,
-  author    = {Bakir, Volkan},
+  author    = {Bakir, Volkan and Goktas, Polat and Akyuz, Sureyya},
   title     = {Robust Counterfactual Explanations via Stochastic Multi-Objective Optimisation},
   year      = {2026}
 }
