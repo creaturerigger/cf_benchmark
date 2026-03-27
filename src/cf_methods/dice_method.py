@@ -37,6 +37,16 @@ class DiCEMethod(BaseCounterfactualGenerationMethod):
             method=method,
         )
 
+    @property
+    def encoded_categorical_feature_indices(self) -> list[list[int]]:
+        return self.data_interface.get_encoded_categorical_feature_indexes()
+
+    @property
+    def encoded_continuous_feature_indices(self) -> list[int]:
+        encoded_cats = {i for group in self.encoded_categorical_feature_indices for i in group}
+        total = len(self.data_interface.get_encoded_feature_names())
+        return [i for i in range(total) if i not in encoded_cats]
+
     def generate(self, query_instance, num_cfs: int, **kwargs):
         """Generate counterfactuals for query_instance.
 

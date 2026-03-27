@@ -15,10 +15,10 @@ Thank you for your interest in contributing to this project. This document outli
    pip install -e .
    ```
 
-3. Install the [DiCE-X](https://github.com/creaturerigger/DiCE-X) dependency:
+3. Install the [DiCE-X](https://github.com/Dice-Extended/dice-x) dependency:
    ```bash
    cd ..
-   git clone https://github.com/creaturerigger/DiCE-X.git
+   git clone https://github.com/Dice-Extended/dice-x
    cd DiCE-X
    pip install -e .
    cd ../cf_benchmark
