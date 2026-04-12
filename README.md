@@ -26,18 +26,18 @@ YAML Configs
     │                                            │
     ├── Model Config ────→ PYTModel ◄────── Trainer (BCELoss, Adam)
     │                          │
-    ├── CF Method Config ─→ CF Method Registry ─→ CFPoolBuilder ─→ Deduplicator ─→ CSV Pool
-    │                        ├── DiCE (gradient-based)
-    │                        └── NICE (instance-based)
-    │                                                         │
-    └── Experiment Config                                Perturbations (Gaussian / Uniform)
-                                                              │
-                                                         Robustness Evaluation
-                                                              ├── Proximity
-                                                              ├── GeometricInstability
-                                                              └── InterventionInstability
-                                                              │
-                                                         Pareto Selection & Instability Profiles
+    ├── CF Method Config ─→ CF Method Registry ───→ CFPoolBuilder ─→ Deduplicator ─→ CSV Pool
+    │                          ├── DiCE (OPT)       │
+    │                          └── NICE (IB)        │
+    │                                               │
+    └── Experiment Config                      Perturbations (Gaussian / Uniform)
+                                                    │
+                                               Robustness Evaluation
+                                                    ├── Proximity
+                                                    ├── GeometricInstability
+                                                    └── InterventionInstability
+                                                    │
+                                               Pareto Selection & Instability Profiles
 ```
 
 ## Project Structure
@@ -63,12 +63,20 @@ cf_benchmark/
 │   └── run_experiments.py           # Experiment execution script
 ├── notebooks/
 │   └── analysis.ipynb               # Results analysis notebook
-├── results/
-│   ├── figures/                     # Generated plots
-│   ├── models/                      # Trained model checkpoints
-│   ├── pools/                       # Counterfactual pool CSVs
-│   ├── raw/                         # Raw experiment outputs
-│   └── tables/                      # Summary tables
+├── results/                         # Method-scoped outputs
+│   ├── models/                      # Trained model checkpoints (shared)
+│   ├── dice/                        # DiCE-specific results
+│   │   ├── figures/                 # Generated plots
+│   │   ├── logs/                    # Experiment logs
+│   │   ├── pools/                   # Counterfactual pool CSVs
+│   │   ├── raw/                     # Raw experiment outputs
+│   │   └── tables/                  # Summary tables
+│   └── nice/                        # NICE-specific results
+│       ├── figures/
+│       ├── logs/
+│       ├── pools/
+│       ├── raw/
+│       └── tables/
 └── src/
     ├── cf_methods/                   # Counterfactual generation
     │   ├── base_cf_method.py         # Abstract base class
@@ -85,10 +93,12 @@ cf_benchmark/
     │   │   ├── german.py
     │   │   └── lending.py
     │   └── preprocessing/
-    │       └── py_dataset.py         # PyTorch Dataset with auto-preprocessing
+    │       ├── py_dataset.py         # PyTorch Dataset with auto-preprocessing
+    │       └── transform.py          # Transformer (MinMaxScaler + OHE) for CF methods
     ├── evaluation/
     │   ├── experiment.py             # Experiment orchestration
     │   ├── aggregator.py             # Result aggregation
+    │   ├── plotting.py               # Figures (stability curves, Pareto fronts, distributions)
     │   └── stability_curve.py        # Stability profile analysis
     ├── models/
     │   ├── base_model.py             # Abstract model base
