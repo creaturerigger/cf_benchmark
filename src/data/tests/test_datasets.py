@@ -35,11 +35,39 @@ DATASET_SPECS = [
          "loan_status"},
         "loan_status",
     ),
+    (
+        "configs/dataset/heloc.yaml",
+        {"ExternalRiskEstimate", "MSinceOldestTradeOpen",
+         "MSinceMostRecentTradeOpen", "AverageMInFile",
+         "NumSatisfactoryTrades", "NumTrades60Ever2DerogPubRec",
+         "NumTrades90Ever2DerogPubRec", "PercentTradesNeverDelq",
+         "MSinceMostRecentDelq", "MaxDelq2PublicRecLast12M",
+         "NumTotalTrades", "NumTradesOpeninLast12M",
+         "PercentInstallTrades", "MSinceMostRecentInqexcl7days",
+         "NumInqLast6M", "NumInqLast6Mexcl7days",
+         "NetFractionRevolvingBurden", "NetFractionInstallBurden",
+         "NumRevolvingTradesWBalance", "NumInstallTradesWBalance",
+         "NumBank2NatlTradesWHighUtilization", "PercentTradesWBalance",
+         "RiskPerformance"},
+        "RiskPerformance",
+    ),
+    (
+        "configs/dataset/credit_default.yaml",
+        {"limit_bal", "sex", "education", "marriage", "age",
+         "pay_0", "pay_2", "pay_3", "pay_4", "pay_5", "pay_6",
+         "bill_amt1", "bill_amt2", "bill_amt3",
+         "bill_amt4", "bill_amt5", "bill_amt6",
+         "pay_amt1", "pay_amt2", "pay_amt3",
+         "pay_amt4", "pay_amt5", "pay_amt6",
+         "default"},
+        "default",
+    ),
 ]
 
 
 @pytest.fixture(params=DATASET_SPECS, ids=["adult", "compas",
-                                           "german", "lending"])
+                                           "german", "lending",
+                                           "heloc", "credit_default"])
 def dataset(request):
     config_path, expected_columns, target_col = request.param
     with open(config_path) as f:

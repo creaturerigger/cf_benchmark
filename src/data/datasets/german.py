@@ -151,7 +151,7 @@ def load_german(dataset_cfg: dict) -> pd.DataFrame:
 
     zipfilename = dataset_dir_name.split("-")[0] + '.zip'
     zipfilepath = dataset_dir / zipfilename
-    if not (dataset_dir / 'adult.data').is_file():
+    if not (dataset_dir / 'german.data').is_file():
         urlretrieve(dataset_url, zipfilepath)
         with zipfile.ZipFile(zipfilepath, 'r') as unzip:
             unzip.extractall(dataset_dir)

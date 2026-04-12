@@ -1,0 +1,4 @@
+query_id,generated,duplicates,after_dedup,sigma,pareto
+1bde6d8b-c5cb-426e-8e8d-5212c3baae06,6,5,1,0.05,1
+18a8fa41-8246-4e8c-9b32-d88ebb742fc6,6,5,1,0.05,1
+TOTAL,12,10,2,,2

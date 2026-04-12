@@ -1,0 +1,17 @@
+method:
+  name: moc
+  implementation: pymoo-nsga2
+
+generation:
+  total_cfs: 5
+  desired_class: opposite
+
+moc:
+  pop_size: 20             # NSGA-II population size  (R default: 20)
+  n_gen: 175               # number of generations     (R default: 175)
+  p_cross: 0.57            # crossover probability     (R p.rec: 0.57)
+  p_mut: 0.79              # mutation probability       (R p.mut: 0.79)
+  eta_cross: 15            # SBX distribution index
+  eta_mut: 20              # PM distribution index
+  k: 1                     # nearest neighbours for plausibility objective
+  seed: null               # internal pymoo seed (null → use global seed)

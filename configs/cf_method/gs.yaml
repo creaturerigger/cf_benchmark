@@ -1,0 +1,14 @@
+method:
+  name: gs
+  implementation: growingspheres
+
+generation:
+  total_cfs: 5
+  desired_class: opposite
+
+gs:
+  n_in_layer: 2000        # observations generated per spherical layer
+  layer_shape: ball        # ring | ball | sphere
+  first_radius: 0.1       # initial hypersphere radius
+  dicrease_radius: 10     # radius shrinking factor (must be > 1.0)
+  sparse: true             # apply feature-selection projection step

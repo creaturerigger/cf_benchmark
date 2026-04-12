@@ -3,5 +3,7 @@ from .datasets.adult import load_adult
 from .datasets.compas import load_compas
 from .datasets.lending import load_lending
 from .datasets.german import load_german
+from .datasets.heloc import load_heloc
+from .datasets.credit_default import load_credit_default
 
 __all__ = ["load_dataset", "register_dataset"]

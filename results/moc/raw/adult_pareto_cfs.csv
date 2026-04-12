@@ -1,0 +1,5 @@
+query_uuid,cf_index,sigma,proximity,geometric_instability,intervention_instability,is_pareto_optimal,age,workclass,education,marital_status,occupation,race,gender,hours_per_week
+5bab4ba4-f360-48e7-969d-dc1d2a73845f,0,0.05,10.589739799499512,2.0000052452087402,1.4285713723083404e-09,True,17.00000050737019,Other/Unknown,School,Separated,White-Collar,White,Female,1.0000011607552686
+5bab4ba4-f360-48e7-969d-dc1d2a73845f,3,0.05,10.589738845825195,5.000004768371582,0.1875,True,17.000003978650113,Other/Unknown,HS-grad,Widowed,Service,Other,Male,1.0001112114205977
+2ac0f02d-d809-4eb6-a497-83105bcb8084,1,0.05,8.959867477416992,2.0235180854797363,1.6666666935449825e-09,True,46.126585049114794,Private,Masters,Widowed,White-Collar,White,Male,98.99294568845916
+2ac0f02d-d809-4eb6-a497-83105bcb8084,2,0.05,8.777318954467773,2.159165859222412,1.6666666935449825e-09,True,32.90380476766662,Private,Doctorate,Widowed,White-Collar,White,Male,98.85437477853112

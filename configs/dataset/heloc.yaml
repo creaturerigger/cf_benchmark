@@ -1,0 +1,8 @@
+dataset:
+    name: heloc
+    url: https://openml.org/data/v1/download/22111912/heloc.arff
+download_location: src/data/datasets/downloads
+specs:
+    target: RiskPerformance
+    train_size: 80
+    train_only: False

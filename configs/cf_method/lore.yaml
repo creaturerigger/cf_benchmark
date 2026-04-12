@@ -1,0 +1,11 @@
+method:
+  name: lore
+  implementation: lore_sa
+
+generation:
+  total_cfs: 5
+  desired_class: opposite
+
+lore:
+  generator: genetic          # genetic | random
+  num_instances: 1000         # neighbourhood size for surrogate training

@@ -1,0 +1,11 @@
+age,workclass,education,marital_status,occupation,race,gender,hours_per_week,query_id
+31,Self-Employed,Doctorate,Single,Professional,White,Male,40,56285f33-d2c9-4e08-9654-f38eb4e0f876
+20,Other/Unknown,Some-college,Single,Other/Unknown,White,Male,40,05f1808e-8e5f-42ee-8069-4124cba5db42
+31,Self-Employed,Doctorate,Single,Professional,White,Male,40,0d6ad740-670a-4a18-9ca4-9b049efbcf84
+20,Other/Unknown,Some-college,Single,Other/Unknown,White,Male,40,beca2b4f-26ff-4d9c-b6b3-45519d794151
+31,Self-Employed,Doctorate,Single,Professional,White,Male,40,f14ba9c0-f3ea-42b3-8f75-b3f1abafcd13
+20,Other/Unknown,Some-college,Single,Other/Unknown,White,Male,40,4791c957-73cf-44a7-8fce-11ebf2ec5dfd
+31,Self-Employed,Doctorate,Single,Professional,White,Male,40,7ac11efd-1ed1-4199-86da-727ff998c1b9
+20,Other/Unknown,Some-college,Single,Other/Unknown,White,Male,40,36bde9c4-f5e0-4080-ad89-6f8e29410a1c
+31,Self-Employed,Doctorate,Single,Professional,White,Male,40,581debd9-1fb8-4179-83b7-81a8db9cd9ee
+20,Other/Unknown,Some-college,Single,Other/Unknown,White,Male,40,c523ab4d-aded-4049-8740-1a5c5ce76ee0

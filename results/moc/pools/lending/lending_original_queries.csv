@@ -1,0 +1,7 @@
+employment_years,num_open_credit_acc,annual_income,loan_grade,credit_history,purpose,home,addr_state,query_id
+3,14,60000.0,C,14.1,purchase,RENT,FL,56d776e6-ce1b-47ad-b570-53c7b10f2633
+5,12,175000.0,F,16.5,purchase,MORTGAGE,PA,fadc5fa6-3039-4b80-bda0-45924ba4392c
+3,14,60000.0,C,14.1,purchase,RENT,FL,24b2a5bc-8869-4839-9e20-5b947d02f769
+5,12,175000.0,F,16.5,purchase,MORTGAGE,PA,2663baca-ed36-4de8-ba83-de57bd793d26
+3,14,60000.0,C,14.1,purchase,RENT,FL,24d349f7-1b38-475e-8f9e-e108418e305b
+5,12,175000.0,F,16.5,purchase,MORTGAGE,PA,752782c0-e2ac-4af1-9d14-04766cad3671

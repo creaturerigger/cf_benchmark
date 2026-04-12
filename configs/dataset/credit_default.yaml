@@ -1,0 +1,8 @@
+dataset:
+    name: credit-default
+    url: https://openml.org/data/v1/download/21854402/default-of-credit-card-clients.arff
+download_location: src/data/datasets/downloads
+specs:
+    target: default
+    train_size: 80
+    train_only: False
