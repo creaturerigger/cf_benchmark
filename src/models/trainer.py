@@ -83,8 +83,10 @@ class Trainer:
         if save:
             self.save_model(self.model_save_dir)
 
-    def save_model(self, root_dir: Path):
-        model_file_name = f'pyt_model_{time.time()}.pt'
+    def save_model(self, root_dir: Path, filename: str = "model.pt"):
         root_dir.mkdir(parents=True, exist_ok=True)
-        file_path = root_dir / model_file_name
-        torch.save(self.history, file_path)
+        file_path = root_dir / filename
+        torch.save({
+            'model_state_dict': self.model.state_dict(),
+            'history': self.history,
+        }, file_path)

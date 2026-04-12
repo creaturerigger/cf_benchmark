@@ -1,0 +1,13 @@
+method:
+  name: nice
+  implementation: NICEx
+
+generation:
+  total_cfs: 5
+  desired_class: opposite
+
+nice:
+  optimization: sparsity       # sparsity | proximity | plausibility | none
+  justified_cf: true            # only use correctly-classified neighbours
+  distance_metric: HEOM         # Heterogeneous Euclidean-Overlap Metric
+  num_normalization: minmax     # minmax | std

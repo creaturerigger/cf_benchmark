@@ -9,14 +9,15 @@ class CFPoolBuilder:
 
     def __init__(self, cf_method, runs: int = 200, per_run: int = 5,
                  ds_name: str=None, save_interval: int = 5,
-                 perturbed: bool=False):
+                 perturbed: bool=False, pool_path: Path | None = None):
         self.runs = runs
         self.per_run = per_run
         self.cf_method = cf_method
         self.ds_name = ds_name
         self.perturbed = perturbed
         self.save_interval = save_interval
-        self.ds_pool_path = DefaultPaths.poolPath / self.ds_name
+        base = pool_path if pool_path is not None else DefaultPaths.poolPath
+        self.ds_pool_path = base / self.ds_name
         self.ds_pool_path.mkdir(parents=True, exist_ok=True)
 
         suffix = "perturbed" if perturbed else "original"
@@ -38,7 +39,7 @@ class CFPoolBuilder:
         deduped = Deduplicator()(combined)
         deduped.to_csv(filepath, index=False)
 
-    def build(self, x: pd.DataFrame, query_id: str=None) -> str:
+    def build(self, x: pd.DataFrame, query_id: str=None) -> tuple[str, pd.DataFrame]:
         """Generate a pool of CFs for a single query instance.
 
         Args:
@@ -49,7 +50,9 @@ class CFPoolBuilder:
                       generated.
 
         Returns:
-            The query_id assigned to this query.
+            Tuple of (query_id, DataFrame of all CFs generated in this call).
+            The DataFrame carries an attribute ``pool_stats`` — a dict with
+            keys ``generated``, ``duplicates``, ``after_dedup``.
         """
         if query_id is None:
             query_id = str(uuid.uuid4())
@@ -59,6 +62,7 @@ class CFPoolBuilder:
         self._append_to_csv(query_row, self.queries_filepath)
 
         batch = []
+        all_generated = []
         for i in range(self.runs):
             result = self.cf_method.generate(x, self.per_run)
             cfs_df = result.to_dataframe()
@@ -66,6 +70,7 @@ class CFPoolBuilder:
                 cfs_df = cfs_df.copy()
                 cfs_df["query_id"] = query_id
                 batch.append(cfs_df)
+                all_generated.append(cfs_df)
 
             if batch and (i + 1) % self.save_interval == 0:
                 self._save_deduplicated(pd.concat(batch, axis=0, ignore_index=True),
@@ -76,4 +81,17 @@ class CFPoolBuilder:
             self._save_deduplicated(pd.concat(batch, axis=0, ignore_index=True),
                                     self.cfs_filepath)
 
-        return query_id
+        generated_df = (
+            pd.concat(all_generated, ignore_index=True) if all_generated
+            else pd.DataFrame()
+        )
+
+        n_generated = len(generated_df)
+        n_after_dedup = len(Deduplicator()(generated_df)) if n_generated else 0
+        generated_df.attrs["pool_stats"] = {
+            "generated": n_generated,
+            "duplicates": n_generated - n_after_dedup,
+            "after_dedup": n_after_dedup,
+        }
+
+        return query_id, generated_df

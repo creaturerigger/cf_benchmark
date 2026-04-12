@@ -1,6 +1,6 @@
 import torch
 import numpy as np
-from sklearn.preprocessing import StandardScaler, OneHotEncoder, LabelEncoder
+from sklearn.preprocessing import MinMaxScaler, OneHotEncoder, LabelEncoder
 from sklearn.model_selection import train_test_split
 import pandas as pd
 
@@ -8,7 +8,7 @@ import pandas as pd
 class PYTDataset(torch.utils.data.Dataset):
     def __init__(self, dataframe: pd.DataFrame, target_column: str,
                  scaler=None, encoder=None, target_encoder=None,
-                 test_size=0.2, train=True):
+                 test_size: float = 0.2, train: bool = True):
         self.dataframe = dataframe.copy()
         self.target_column = target_column
         self.scaler = scaler
@@ -30,7 +30,7 @@ class PYTDataset(torch.utils.data.Dataset):
         numerical_cols = self.features.select_dtypes(include=[np.number]).columns
         categorical_cols = self.features.columns.difference(numerical_cols)
         if self.scaler is None and len(numerical_cols) > 0:
-            self.scaler = StandardScaler().fit(self.features[numerical_cols])
+            self.scaler = MinMaxScaler().fit(self.features[numerical_cols])
 
         if self.encoder is None and len(categorical_cols) > 0:
             self.encoder = OneHotEncoder(sparse_output=False,
@@ -60,15 +60,18 @@ class PYTDataset(torch.utils.data.Dataset):
         self.target = torch.tensor(self.target, dtype=torch.long)
         combined_features = torch.cat((self.features, self.target.unsqueeze(1)), dim=1)
         self.train_features_tensor, self.test_features_tensor, \
-        self.y_train_tensor, self.y_test_tensor = train_test_split(combined_features,
-                                                                    self.target, test_size=self.test_size,
-                                                                    stratify=combined_features[:, -1],
-                                                                    random_state=42)
+            self.y_train_tensor, self.y_test_tensor = \
+            train_test_split(combined_features,
+                             self.target, test_size=self.test_size,
+                             stratify=combined_features[:, -1],
+                             random_state=42)
         self.train_dataset_df, self.test_dataset_df, \
-        self.y_train_df, self.y_test_df = train_test_split(self.dataframe, self.dataframe[self.target_column],
-                                                            test_size=self.test_size,
-                                                            stratify=self.dataframe[self.target_column],
-                                                            random_state=42)
+            self.y_train_df, self.y_test_df = \
+            train_test_split(self.dataframe,
+                             self.dataframe[self.target_column],
+                             test_size=self.test_size,
+                             stratify=self.dataframe[self.target_column],
+                             random_state=42)
 
     def __len__(self):
         if self.train:

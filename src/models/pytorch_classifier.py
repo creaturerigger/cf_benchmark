@@ -1,4 +1,6 @@
+import torch
 import torch.nn as nn
+from pathlib import Path
 from .base_model import BaseModel
 
 ACTIVATIONS = {
@@ -40,3 +42,24 @@ class PYTModel(nn.Module, BaseModel):
 
     def forward(self, x):
         return self.model(x)
+
+    @classmethod
+    def load(cls, path: str | Path, cfg: dict) -> "PYTModel":
+        """Load a previously saved model checkpoint.
+
+        Args:
+            path: path to the ``.pt`` file produced by ``Trainer.save_model``.
+            cfg: the same config dict used at training time.
+
+        Returns:
+            A PYTModel with restored weights.
+        """
+        checkpoint = torch.load(path, map_location="cpu", weights_only=False)
+        state_dict = checkpoint["model_state_dict"]
+        # infer in_features from the first Linear layer
+        first_weight = next(v for k, v in state_dict.items() if k.endswith(".weight"))
+        in_features = first_weight.shape[1]
+        model = cls(in_features=in_features, cfg=cfg)
+        model.load_state_dict(state_dict)
+        model.eval()
+        return model

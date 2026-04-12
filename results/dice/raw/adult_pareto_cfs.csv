@@ -1,0 +1,14 @@
+query_uuid,cf_index,sigma,proximity,geometric_instability,intervention_instability,is_pareto_optimal,age,workclass,education,marital_status,occupation,race,gender,hours_per_week,income
+454c93ae-5392-4133-9514-097e5a34d6d0,0,0.03,6.0204081535339355,0.020501360297203064,3.3333329430007552e-09,True,31,Self-Employed,Bachelors,Single,Blue-Collar,Other,Male,38,0.664
+454c93ae-5392-4133-9514-097e5a34d6d0,2,0.03,4.102040767669678,1.4129157066345215,0.25,True,31,Private,Bachelors,Single,Professional,White,Male,50,0.681
+d4c404ed-bc96-4ec2-9b85-e4e3fbd72f4f,0,0.03,4.438356399536133,0.8696300387382507,0.0833333358168602,True,52,Other/Unknown,Some-college,Widowed,Other/Unknown,White,Female,40,0.673
+d4c404ed-bc96-4ec2-9b85-e4e3fbd72f4f,2,0.03,4.1230082511901855,3.5189170837402344,0.5333333611488342,True,26,Private,Some-college,Widowed,Other/Unknown,White,Male,44,0.673
+9c440304-52fe-472b-b921-d36eacbd739c,0,0.03,4.041095733642578,0.05120677873492241,0.1666666716337204,True,81,Private,Bachelors,Married,White-Collar,Other,Male,45,0.854
+9c440304-52fe-472b-b921-d36eacbd739c,2,0.03,2.241962432861328,0.11709066480398178,0.1111111119389534,True,73,Private,Bachelors,Married,White-Collar,White,Male,62,0.785
+7411dc39-9dce-4840-9e89-56aa435c58ce,0,0.05,6.0204081535339355,3.3810455799102783,0.36666667461395264,True,31,Self-Employed,Bachelors,Single,Blue-Collar,Other,Male,38,0.664
+7411dc39-9dce-4840-9e89-56aa435c58ce,1,0.05,8.0,2.771223783493042,0.3333333432674408,True,31,Private,Bachelors,Married,Sales,White,Male,40,0.854
+7411dc39-9dce-4840-9e89-56aa435c58ce,2,0.05,4.102040767669678,0.8077531456947327,0.4444444477558136,True,31,Private,Bachelors,Single,Professional,White,Male,50,0.681
+8bb72074-e641-41c6-82dc-6396122d56aa,0,0.05,4.438356399536133,1.5019103288650513,0.1666666716337204,True,52,Other/Unknown,Some-college,Widowed,Other/Unknown,White,Female,40,0.673
+8bb72074-e641-41c6-82dc-6396122d56aa,1,0.05,6.0,0.8182368874549866,0.1666666716337204,True,20,Private,Some-college,Single,Sales,Other,Male,40,0.749
+8bb72074-e641-41c6-82dc-6396122d56aa,2,0.05,4.1230082511901855,2.8877084255218506,0.4166666567325592,True,26,Private,Some-college,Widowed,Other/Unknown,White,Male,44,0.673
+1958781a-acfc-4cb6-9ad9-cb35b6ca0733,2,0.05,2.241962432861328,0.08200538158416748,0.2222222238779068,True,73,Private,Bachelors,Married,White-Collar,White,Male,62,0.785

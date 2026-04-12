@@ -1,0 +1,5 @@
+age,workclass,education,marital_status,occupation,race,gender,hours_per_week,query_id
+31.0,Private,Doctorate,Single,Professional,White,Male,40.0,2ab1cc54-3831-4c84-a3cd-f848cb78ff23
+51.0,Other/Unknown,Doctorate,Single,Other/Unknown,White,Male,40.0,4a9e31d8-3f7a-422b-befe-81a0b1512cf7
+31.0,Private,Doctorate,Single,Professional,White,Male,40.0,80d1b005-3811-489d-8fbc-4cb4f82b0edc
+51.0,Other/Unknown,Doctorate,Single,Other/Unknown,White,Male,40.0,f3590aed-7f97-4b34-8650-9985a3b9eb05

@@ -57,18 +57,28 @@ class TestCFPoolBuilderInit:
 
 class TestBuildReturnValue:
 
-    def test_returns_string(self, builder, query):
-        qid = builder.build(query)
+    def test_returns_tuple(self, builder, query):
+        result = builder.build(query)
+        assert isinstance(result, tuple)
+        assert len(result) == 2
+
+    def test_query_id_is_string(self, builder, query):
+        qid, _ = builder.build(query)
         assert isinstance(qid, str)
 
     def test_returns_valid_uuid(self, builder, query):
-        qid = builder.build(query)
+        qid, _ = builder.build(query)
         uuid.UUID(qid)  # raises if not a valid UUID
 
     def test_accepts_existing_query_id(self, builder, query):
         existing_id = str(uuid.uuid4())
-        returned_id = builder.build(query, query_id=existing_id)
+        returned_id, _ = builder.build(query, query_id=existing_id)
         assert returned_id == existing_id
+
+    def test_returns_generated_cfs(self, builder, query):
+        _, cfs_df = builder.build(query)
+        assert isinstance(cfs_df, pd.DataFrame)
+        assert len(cfs_df) > 0
 
 
 class TestBuildFileOutput:
@@ -92,7 +102,7 @@ class TestBuildFileOutput:
         assert 'query_id' in df.columns
 
     def test_query_id_consistent_across_cfs(self, builder, query):
-        qid = builder.build(query)
+        qid, _ = builder.build(query)
         df = pd.read_csv(builder.cfs_filepath)
         assert (df['query_id'] == qid).all()
 

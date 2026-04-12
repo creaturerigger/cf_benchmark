@@ -1,0 +1,5 @@
+age,workclass,education,marital_status,occupation,race,gender,hours_per_week,query_id
+32.88787841796875,Self-Employed,Assoc,Single,Professional,White,Male,32.08900833129883,80d1b005-3811-489d-8fbc-4cb4f82b0edc
+25.89197540283203,Self-Employed,HS-grad,Single,Professional,White,Male,39.33601760864258,80d1b005-3811-489d-8fbc-4cb4f82b0edc
+51.0,Other/Unknown,Doctorate,Single,Other/Unknown,White,Male,41.41884231567383,f3590aed-7f97-4b34-8650-9985a3b9eb05
+51.0,Other/Unknown,Doctorate,Single,Other/Unknown,White,Male,44.17796325683594,f3590aed-7f97-4b34-8650-9985a3b9eb05

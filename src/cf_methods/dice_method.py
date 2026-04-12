@@ -29,12 +29,17 @@ class DiCEMethod(BaseCounterfactualGenerationMethod):
         self.model_interface = dice_ml_x.Model(
             model=model,
             backend=BackEndTypes.Pytorch,
+            func="ohe-min-max",
         )
         method = cfg.get("search", {}).get("algorithm", "gradient")
+        dice_kwargs = {}
+        if method == "gradient":
+            dice_kwargs["dice_x"] = cfg.get("dice_x", {}).get("enabled", False)
         self.explainer = dice_ml_x.Dice(
             self.data_interface,
             self.model_interface,
             method=method,
+            **dice_kwargs,
         )
 
     @property

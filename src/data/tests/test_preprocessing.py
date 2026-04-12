@@ -2,7 +2,7 @@ import pytest
 import pandas as pd
 import numpy as np
 import torch
-from sklearn.preprocessing import StandardScaler, OneHotEncoder, LabelEncoder
+from sklearn.preprocessing import MinMaxScaler, OneHotEncoder, LabelEncoder
 from src.data.preprocessing.py_dataset import PYTDataset
 
 
@@ -70,7 +70,7 @@ class TestNumericData:
     def test_scaler_is_created(self, numeric_dataframe):
         ds = PYTDataset(numeric_dataframe, target_column='target')
         assert ds.scaler is not None
-        assert isinstance(ds.scaler, StandardScaler)
+        assert isinstance(ds.scaler, MinMaxScaler)
 
     def test_encoder_is_none_for_numeric_only(self, numeric_dataframe):
         ds = PYTDataset(numeric_dataframe, target_column='target')
@@ -108,7 +108,7 @@ class TestNumericData:
     def test_custom_scaler_is_used(self, numeric_dataframe):
         features = numeric_dataframe.drop(columns=['target'])
         numerical_cols = features.select_dtypes(include=[np.number]).columns
-        custom_scaler = StandardScaler().fit(features[numerical_cols])
+        custom_scaler = MinMaxScaler().fit(features[numerical_cols])
         ds = PYTDataset(numeric_dataframe, target_column='target', scaler=custom_scaler)
         assert ds.scaler is custom_scaler
 

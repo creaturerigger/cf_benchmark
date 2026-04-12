@@ -1,6 +1,6 @@
 # CF-Benchmark: Perturbation-Aware Counterfactual Robustness Framework
 
-A perturbation-aware framework that formulates counterfactual explanation selection as a **stochastic multi-objective optimisation problem**, evaluating explanations under input uncertainty through geometric and intervention stability metrics.
+A perturbation-aware framework that formulates counterfactual explanation selection as a **stochastic multi-objective optimisation problem**, evaluating explanations under input uncertainty through geometric and intervention instability metrics.
 
 ## Overview
 
@@ -12,10 +12,10 @@ This framework addresses this gap by:
 2. **Perturbing input instances** in the neighbourhood of the original and evaluating each candidate explanation under these perturbations
 3. **Defining a multi-objective vector** for each candidate comprising:
    - **(i) Proximity** to the original instance
-   - **(ii) Geometric stability** under perturbations (L1, L2, L∞, Cosine, Mahalanobis distances)
-   - **(iii) Intervention stability** measuring consistency of feature-level modifications (Jaccard Index, Dice–Sørensen Coefficient)
+   - **(ii) Geometric instability** under perturbations (L1, L2, L∞, Cosine, Mahalanobis distances)
+   - **(iii) Intervention instability** measuring consistency of feature-level modifications (Jaccard Index, Dice–Sørensen Coefficient)
 4. **Selecting Pareto-efficient solutions** that are not dominated across conflicting objectives, avoiding arbitrary scalarisation
-5. **Generating stability profiles** that illustrate robustness as a function of perturbation magnitude, summarised via AUC scores
+5. **Generating instability profiles** that illustrate robustness as a function of perturbation magnitude, summarised via AUC scores
 
 ## Architecture
 
@@ -33,10 +33,10 @@ YAML Configs
                                                               │
                                                          Robustness Evaluation
                                                               ├── Proximity
-                                                              ├── GeometricStability
-                                                              └── InterventionStability
+                                                              ├── GeometricInstability
+                                                              └── InterventionInstability
                                                               │
-                                                         Pareto Selection & Stability Profiles
+                                                         Pareto Selection & Instability Profiles
 ```
 
 ## Project Structure
@@ -102,8 +102,8 @@ cf_benchmark/
     │   ├── pool_builder.py           # CF pool generation & CSV persistence
     │   └── deduplicator.py           # Duplicate CF removal
     ├── robustness/
-    │   ├── geometric.py              # Geometric stability (L1, L2, L∞, Cosine, Mahalanobis)
-    │   ├── intervention.py           # Intervention stability (Jaccard, Dice–Sørensen)
+    │   ├── geometric.py              # Geometric instability (L1, L2, L∞, Cosine, Mahalanobis)
+    │   ├── intervention.py           # Intervention instability (Jaccard, Dice–Sørensen)
     │   ├── matcher.py                # CF matching logic
     │   └── score.py                  # Composite robustness scoring
     └── utils/
@@ -194,13 +194,13 @@ For each input instance, multiple counterfactual generation runs produce a **can
 
 Each candidate counterfactual is evaluated under a distribution of **perturbed inputs** in the neighbourhood of the original instance:
 
-- **Geometric Stability** — Measures the distance between the original CF and the CF derived from a perturbed input using L1, L2, L∞, Cosine, or Mahalanobis distance. Lower values indicate greater geometric stability.
+- **Geometric Instability** — Measures the distance between the original CF and the CF derived from a perturbed input using L1, L2, L∞, Cosine, or Mahalanobis distance. Lower values indicate greater geometric instability.
 
-- **Intervention Stability** — Measures the consistency of feature-level modifications (which features are changed) using Jaccard Index or Dice–Sørensen Coefficient. Higher overlap indicates greater intervention stability.
+- **Intervention Instability** — Measures the consistency of feature-level modifications (which features are changed) using Jaccard Index or Dice–Sørensen Coefficient. Higher overlap indicates greater intervention instability.
 
 ### Pareto Selection
 
-Candidates are evaluated on a multi-objective vector of (proximity, geometric stability, intervention stability). **Pareto-efficient** solutions — those not dominated on all objectives — are selected, avoiding arbitrary weighting of conflicting objectives.
+Candidates are evaluated on a multi-objective vector of (proximity, geometric instability, intervention instability). **Pareto-efficient** solutions — those not dominated on all objectives — are selected, avoiding arbitrary weighting of conflicting objectives.
 
 ### Stability Profiles
 
