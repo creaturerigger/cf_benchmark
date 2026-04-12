@@ -1,3 +1,0 @@
-query_uuid,cf_index,sigma,proximity,geometric_instability,intervention_instability,is_pareto_optimal,employment_years,num_open_credit_acc,annual_income,loan_grade,credit_history,purpose,home,addr_state
-a09d34be-956d-419e-9606-562fd9badbbd,0,0.05,2.0,0.11525262892246246,9.99999993922529e-09,True,3.0,14.0,60000.0,G,14.1,purchase,RENT,FL
-5de373e1-de83-4950-837d-203970b4d18d,0,0.05,2.0,2.1696765422821045,0.25,True,5.0,12.0,175000.0,F,16.5,purchase,MORTGAGE,NE

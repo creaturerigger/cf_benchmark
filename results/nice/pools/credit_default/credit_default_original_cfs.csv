@@ -1,3 +1,0 @@
-limit_bal,sex,education,marriage,age,pay_0,pay_2,pay_3,pay_4,pay_5,pay_6,bill_amt1,bill_amt2,bill_amt3,bill_amt4,bill_amt5,bill_amt6,pay_amt1,pay_amt2,pay_amt3,pay_amt4,pay_amt5,pay_amt6,query_id
-10000.0,Male,University,Single,46.0,2.0,-1.0,-1.0,0.0,0.0,0.0,1540.0,26060.0,0.0,2650.0,3320.0,2764.0,26060.0,0.0,3472.0,2320.0,1764.0,2841.0,1bde6d8b-c5cb-426e-8e8d-5212c3baae06
-10000.0,Male,Graduate,Married,31.0,2.0,-1.0,-2.0,-2.0,-2.0,-2.0,15000.0,0.0,0.0,0.0,0.0,11694.0,0.0,0.0,0.0,0.0,11694.0,0.0,18a8fa41-8246-4e8c-9b32-d88ebb742fc6

@@ -1,5 +1,0 @@
-,,proximity,proximity,proximity,proximity,proximity,proximity,proximity,proximity,geometric_instability,geometric_instability,geometric_instability,geometric_instability,geometric_instability,geometric_instability,geometric_instability,geometric_instability,intervention_instability,intervention_instability,intervention_instability,intervention_instability,intervention_instability,intervention_instability,intervention_instability,intervention_instability
-,,count,mean,std,min,25%,50%,75%,max,count,mean,std,min,25%,50%,75%,max,count,mean,std,min,25%,50%,75%,max
-query_uuid,sigma,,,,,,,,,,,,,,,,,,,,,,,,
-5de373e1-de83-4950-837d-203970b4d18d,0.05,1.0,2.0,,2.0,2.0,2.0,2.0,2.0,1.0,2.1696765422821045,,2.1696765422821045,2.1696765422821045,2.1696765422821045,2.1696765422821045,2.1696765422821045,1.0,0.25,,0.25,0.25,0.25,0.25,0.25
-a09d34be-956d-419e-9606-562fd9badbbd,0.05,1.0,2.0,,2.0,2.0,2.0,2.0,2.0,1.0,0.11525262892246246,,0.11525262892246246,0.11525262892246246,0.11525262892246246,0.11525262892246246,0.11525262892246246,1.0,9.99999993922529e-09,,9.99999993922529e-09,9.99999993922529e-09,9.99999993922529e-09,9.99999993922529e-09,9.99999993922529e-09

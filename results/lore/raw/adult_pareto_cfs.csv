@@ -1,4 +1,0 @@
-query_uuid,cf_index,sigma,proximity,geometric_instability,intervention_instability,is_pareto_optimal,age,workclass,education,marital_status,occupation,race,gender,hours_per_week
-581debd9-1fb8-4179-83b7-81a8db9cd9ee,0,0.05,2.0,1.0916670560836792,0.25,True,31.0,Self-Employed,Doctorate,Single,Professional,White,Female,40.0
-581debd9-1fb8-4179-83b7-81a8db9cd9ee,4,0.05,2.0,2.0916671752929688,9.99999993922529e-09,True,31.0,Self-Employed,Doctorate,Single,Sales,White,Male,40.0
-c523ab4d-aded-4049-8740-1a5c5ce76ee0,0,0.05,6.0,1.0437304973602295,3.33333316504536e-09,True,20.0,Self-Employed,Doctorate,Married,Other/Unknown,White,Male,40.0

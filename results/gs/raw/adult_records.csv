@@ -1,5 +1,0 @@
-query_uuid,cf_index,sigma,proximity,geometric_instability,intervention_instability,is_pareto_optimal
-cf8bfe2c-2267-409c-8763-d5c39ec8aeac,0,0.05,2.0,0.09166699647903442,9.99999993922529e-09,True
-cf8bfe2c-2267-409c-8763-d5c39ec8aeac,1,0.05,2.0,3.0916671752929688,0.5,False
-cf8bfe2c-2267-409c-8763-d5c39ec8aeac,2,0.05,2.0,4.091667175292969,1.0,False
-cf8bfe2c-2267-409c-8763-d5c39ec8aeac,3,0.05,2.0,2.0916671752929688,0.5,False
