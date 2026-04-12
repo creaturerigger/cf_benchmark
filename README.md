@@ -26,8 +26,9 @@ YAML Configs
     │                                            │
     ├── Model Config ────→ PYTModel ◄────── Trainer (BCELoss, Adam)
     │                          │
-    ├── CF Method Config ─→ DiCE Method (Any method
-    │                                    can replace) ─→ CFPoolBuilder ─→ Deduplicator ─→ CSV Pool
+    ├── CF Method Config ─→ CF Method Registry ─→ CFPoolBuilder ─→ Deduplicator ─→ CSV Pool
+    │                        ├── DiCE (gradient-based)
+    │                        └── NICE (instance-based)
     │                                                         │
     └── Experiment Config                                Perturbations (Gaussian / Uniform)
                                                               │
@@ -47,7 +48,8 @@ cf_benchmark/
 ├── pyproject.toml                   # Project metadata and dependencies
 ├── configs/                         # YAML configuration files
 │   ├── cf_method/
-│   │   └── dice.yaml                # DiCE generation parameters
+│   │   ├── dice.yaml                # DiCE generation parameters
+│   │   └── nice.yaml                # NICE generation parameters
 │   ├── dataset/
 │   │   ├── adult.yaml               # Adult Income dataset
 │   │   ├── compas.yaml              # COMPAS Recidivism dataset
@@ -70,7 +72,8 @@ cf_benchmark/
 └── src/
     ├── cf_methods/                   # Counterfactual generation
     │   ├── base_cf_method.py         # Abstract base class
-    │   ├── dice_method.py            # DiCE-X wrapper
+    │   ├── dice_method.py            # DiCE-X wrapper (optimisation-based)
+    │   ├── nice_method.py            # NICE wrapper (instance-based)
     │   ├── method_factory.py         # Factory pattern
     │   └── registry.py               # @register_method decorator
     ├── data/
@@ -119,6 +122,7 @@ cf_benchmark/
 
 - Python ≥ 3.10.13
 - [DiCE-X](https://github.com/Dice-Extended/dice-x) (custom fork of DiCE)
+- [NICEx](https://pypi.org/project/NICEx/) (Nearest Instance Counterfactual Explanations)
 
 ### Setup
 
@@ -136,6 +140,9 @@ git clone https://github.com/Dice-Extended/dice-x.git
 cd DiCE-X
 pip install -e .
 cd ../cf_benchmark
+
+# Install NICE (no-deps to avoid pinned-version conflicts)
+pip install NICEx --no-deps
 ```
 
 ## Datasets
@@ -148,6 +155,15 @@ cd ../cf_benchmark
 | **Lending Club** | `loan_status` | 0 / 1 | Kaggle |
 
 Datasets are auto-downloaded and preprocessed on first use. Each dataset loader handles feature engineering, type conversion, and domain-specific cleaning.
+
+## Counterfactual Methods
+
+| Method | Strategy Family | Package | Key Property |
+|--------|----------------|---------|-------------|
+| **DiCE** | Optimisation-based (OPT) | [DiCE-X](https://github.com/Dice-Extended/dice-x) | Diversity-focused; gradient-based search over differentiable loss |
+| **NICE** | Instance-based (IB) | [NICEx](https://pypi.org/project/NICEx/) | Nearest-neighbour with sparsity/proximity/plausibility optimisation; deterministic |
+
+Methods are registered via the `@register_method` decorator and instantiated at runtime through `create_method(cfg, model, dataframe, target_column, continuous_features)`. New methods only need to subclass `BaseCounterfactualGenerationMethod` and implement `generate()`.
 
 ## Configuration
 
@@ -164,13 +180,24 @@ learning_rate: 0.001
 batch_size: 64
 ```
 
-**CF Method** (`configs/cf_method/dice.yaml`):
+**CF Method — DiCE** (`configs/cf_method/dice.yaml`):
 ```yaml
 total_CFs: 5
 desired_class: opposite
 backend: PYT
 algorithm: gradient
 iterations: 500
+```
+
+**CF Method — NICE** (`configs/cf_method/nice.yaml`):
+```yaml
+method:
+  name: nice
+nice:
+  optimization: sparsity   # sparsity | proximity | plausibility | none
+  justified_cf: true
+  distance_metric: HEOM
+  num_normalization: minmax
 ```
 
 **Experiment** (`configs/experiment/robustness_experiment.yaml`):
@@ -208,7 +235,7 @@ Robustness is examined as a function of perturbation magnitude. **Stability prof
 
 ## Design Patterns
 
-- **Registry Pattern** — CF methods and datasets are dynamically registered via `@register_method` and `@register_dataset` decorators, enabling plug-and-play extensibility
+- **Registry Pattern** — CF methods and datasets are dynamically registered via `@register_method` and `@register_dataset` decorators, enabling plug-and-play extensibility. Currently registered methods: `dice`, `nice`
 - **Config-Driven** — All experiment, model, and method parameters are externalised in YAML files
 - **Factory Pattern** — `create_method()` and `load_dataset()` instantiate components by name from the registry
 - **PyTorch Integration** — Native `torch.utils.data.Dataset` subclass with automatic StandardScaler/OneHotEncoder preprocessing
