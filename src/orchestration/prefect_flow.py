@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import logging
 import time
+from pathlib import Path
 from typing import Any
 
 import pandas as pd
@@ -17,6 +18,7 @@ from src.utils.constants import DefaultPaths
 from src.utils.seed import set_seed
 from src.utils.logger import ExperimentLogger
 from src.evaluation.plotting import generate_all_figures, save_tables, save_raw_records, save_pareto_cfs
+from src.evaluation.selectors import apply_all_selectors
 from src.orchestration.tasks import (
     load_and_prepare_data,
     train_model,
@@ -56,6 +58,73 @@ class StageTimer:
 
     def summary_df(self) -> pd.DataFrame:
         return pd.DataFrame(self._records)
+
+
+def _try_reuse_original_pool(
+    query_instances: pd.DataFrame,
+    pool_dir: Path,
+    dataset_name: str,
+    min_pool_size: int,
+) -> tuple[list[str], list[dict]] | None:
+    """Check if existing original pools on disk can be reused.
+
+    Matches current query instances to stored queries by feature values.
+    If every query has a match with at least ``min_pool_size`` deduplicated
+    CFs, returns ``(query_ids, pool_stats)``; otherwise returns ``None``.
+    """
+    if min_pool_size <= 0:
+        return None
+
+    cfs_path = pool_dir / f"{dataset_name}_original_cfs.csv"
+    queries_path = pool_dir / f"{dataset_name}_original_queries.csv"
+
+    if not cfs_path.is_file() or not queries_path.is_file():
+        return None
+
+    stored_queries = pd.read_csv(queries_path)
+    stored_cfs = pd.read_csv(cfs_path)
+
+    feature_cols = [c for c in stored_queries.columns if c != "query_id"]
+
+    # Pre-compute per-query CF counts
+    cf_counts = stored_cfs.groupby("query_id").size()
+
+    query_ids: list[str] = []
+    pool_stats: list[dict] = []
+
+    for idx in range(len(query_instances)):
+        row = query_instances.iloc[idx]
+
+        # Find a stored query that matches by feature values
+        match = stored_queries.copy()
+        for col in feature_cols:
+            if col in row.index:
+                match = match[match[col] == row[col]]
+
+        if match.empty:
+            return None
+
+        # Among matches, pick the one with the most CFs
+        best_qid = None
+        best_count = 0
+        for candidate_qid in match["query_id"].unique():
+            count = cf_counts.get(candidate_qid, 0)
+            if count > best_count:
+                best_count = count
+                best_qid = candidate_qid
+
+        if best_qid is None or best_count < min_pool_size:
+            return None
+
+        query_ids.append(best_qid)
+        pool_stats.append({
+            "query_id": best_qid,
+            "generated": int(best_count),
+            "duplicates": 0,
+            "after_dedup": int(best_count),
+        })
+
+    return query_ids, pool_stats
 
 
 @flow(name="robustness_pipeline")
@@ -192,10 +261,20 @@ def run_pipeline(
 
     # ── 4. CF method instantiation ───────────────────────────
     logger.info("Instantiating CF method: %s", cf_method_name)
+    train_df_for_method = data["train_dataset"].train_dataset_df
+    max_samples = cfg.get("method", {}).get("data_max_samples")
+    if max_samples and len(train_df_for_method) > max_samples:
+        logger.info(
+            "Subsampling training data for CF method: %d → %d rows",
+            len(train_df_for_method), max_samples,
+        )
+        train_df_for_method = train_df_for_method.sample(
+            n=max_samples, random_state=seed,
+        )
     cf_method = create_method(
         cfg,
         model,
-        data["train_dataset"].train_dataset_df,
+        train_df_for_method,
         target_column,
         data["numerical_cols"],
     )
@@ -205,16 +284,34 @@ def run_pipeline(
     query_instances = test_df.drop(columns=[target_column]).head(n_queries)
     logger.info("Evaluating %d query instances", len(query_instances))
 
-    # ── 5. Per-sigma loop ────────────────────────────────────
-    all_records: list[dict] = []
-    all_pool_stats: list[dict] = []
+    min_pool_size = pool_cfg.get("min_pool_size", 0)
 
-    for sigma in sigmas:
-        logger.info("Sigma = %.4f", sigma)
-        current_perturbation_cfg = {**perturbation_cfg, "sigma": sigma}
+    # ── 5a. Original pool building (shared across sigmas) ────
+    timer.start("pool_building")
+    pool_dir = paths.poolPath / dataset_name
+    n_encoded = (
+        len(transformer.encoded_continuous_feature_indices)
+        + sum(len(g) for g in transformer.encoded_categorical_feature_indices)
+    )
 
-        # Build original pools
-        timer.start(f"pool_building_sigma{sigma}")
+    reuse = _try_reuse_original_pool(
+        query_instances=query_instances,
+        pool_dir=pool_dir,
+        dataset_name=dataset_name,
+        min_pool_size=min_pool_size,
+    )
+
+    all_pool_stats: list[dict] = [].copy()
+
+    if reuse is not None:
+        query_ids, reuse_stats = reuse
+        all_pool_stats.extend(reuse_stats)
+        logger.info(
+            "Reusing existing original pools (%d queries, min %d CFs each)",
+            len(query_ids),
+            min(s["after_dedup"] for s in reuse_stats),
+        )
+    else:
         pool_result = build_cf_pool(
             cf_method=cf_method,
             query_instances=query_instances,
@@ -223,16 +320,46 @@ def run_pipeline(
             pool_path=paths.poolPath,
         )
         query_ids = pool_result["query_ids"]
-        sigma_pool_stats = pool_result["pool_stats"]
-        for s in sigma_pool_stats:
-            s["sigma"] = sigma
-        all_pool_stats.extend(sigma_pool_stats)
-
+        all_pool_stats.extend(pool_result["pool_stats"])
         for qid in query_ids:
-            exp_logger.log_pool(qid, pool_size=pool_cfg.get("runs", 15) * pool_cfg.get("per_run", 5),
-                                is_perturbed=False)
-        elapsed = timer.stop()
-        logger.info("Pool building (sigma=%.4f) took %.2fs", sigma, elapsed)
+            exp_logger.log_pool(
+                qid,
+                pool_size=pool_cfg.get("runs", 15) * pool_cfg.get("per_run", 5),
+                is_perturbed=False,
+            )
+
+    # Load original pools as tensors (once, reused across sigmas)
+    original_pools: dict[str, torch.Tensor] = {}
+    cfs_path = pool_dir / f"{dataset_name}_original_cfs.csv"
+    if cfs_path.is_file():
+        cfs_df = pd.read_csv(cfs_path)
+        for qid in query_ids:
+            qid_cfs = cfs_df[cfs_df["query_id"] == qid]
+            feature_cols = [c for c in qid_cfs.columns if c != "query_id"]
+            if len(qid_cfs) > 0:
+                original_pools[qid] = transformer.transform(
+                    qid_cfs[feature_cols],
+                )
+            else:
+                original_pools[qid] = torch.empty(0, n_encoded)
+    for qid in query_ids:
+        if qid not in original_pools:
+            original_pools[qid] = torch.empty(0, n_encoded)
+
+    elapsed = timer.stop()
+    logger.info("Original pool building took %.2fs", elapsed)
+
+    # ── 5b. Per-sigma loop (perturbed pools + evaluation) ────
+    all_records: list[dict] = []
+
+    for sigma in sigmas:
+        logger.info("Sigma = %.4f", sigma)
+        current_perturbation_cfg = {**perturbation_cfg, "sigma": sigma}
+
+        # Tag pool stats with this sigma
+        for s in all_pool_stats:
+            if "sigma" not in s:
+                s["sigma"] = sigma
 
         # Build perturbed pools
         timer.start(f"perturbed_pools_sigma{sigma}")
@@ -248,25 +375,6 @@ def run_pipeline(
         )
         elapsed = timer.stop()
         logger.info("Perturbed pool building (sigma=%.4f) took %.2fs", sigma, elapsed)
-
-        # Load original pools as tensors
-        pool_dir = paths.poolPath / dataset_name
-        original_pools: dict[str, torch.Tensor] = {}
-        cfs_path = pool_dir / f"{dataset_name}_original_cfs.csv"
-        if cfs_path.is_file():
-            cfs_df = pd.read_csv(cfs_path)
-            for qid in query_ids:
-                qid_cfs = cfs_df[cfs_df["query_id"] == qid]
-                feature_cols = [c for c in qid_cfs.columns if c != "query_id"]
-                if len(qid_cfs) > 0:
-                    original_pools[qid] = transformer.transform(
-                        qid_cfs[feature_cols],
-                    )
-                else:
-                    original_pools[qid] = torch.empty(
-                        0, len(transformer.encoded_continuous_feature_indices)
-                        + sum(len(g) for g in transformer.encoded_categorical_feature_indices),
-                    )
 
         # Run evaluation
         timer.start(f"evaluation_sigma{sigma}")
@@ -305,7 +413,15 @@ def run_pipeline(
                         ps["pareto"] = n_pareto
                         break
 
-    # ── 6. Aggregation ───────────────────────────────────────
+    # ── 6. Selection strategy comparison ─────────────────────
+    timer.start("selection_analysis")
+    logger.info("Running selection strategy comparison")
+    selection_records = apply_all_selectors(all_records, seed=seed)
+    selection_df = pd.DataFrame(selection_records)
+    elapsed = timer.stop()
+    logger.info("Selection analysis took %.2fs", elapsed)
+
+    # ── 7. Aggregation ───────────────────────────────────────
     timer.start("aggregation")
     logger.info("Aggregating results")
     tables = aggregate_results(all_records, dataset_name)
@@ -322,12 +438,20 @@ def run_pipeline(
     elapsed = timer.stop()
     logger.info("Aggregation took %.2fs", elapsed)
 
-    # ── 7. Save artefacts ────────────────────────────────────
+    # ── 8. Save artefacts ────────────────────────────────────
     timer.start("save_artefacts")
     logger.info("Saving tables and generating figures")
     save_raw_records(all_records, dataset_name, out_dir=paths.rawPath)
     save_pareto_cfs(all_records, dataset_name, pool_path=paths.poolPath, out_dir=paths.rawPath)
     save_tables(tables, dataset_name, out_dir=paths.tablesPath)
+
+    # Save selection strategy comparison
+    if not selection_df.empty:
+        sel_path = paths.tablesPath / f"{dataset_name}_selection_comparison.csv"
+        sel_path.parent.mkdir(parents=True, exist_ok=True)
+        selection_df.to_csv(sel_path, index=False)
+        logger.info("Selection comparison saved to %s", sel_path)
+
     generate_all_figures(
         records=all_records,
         tables=tables,
@@ -374,4 +498,5 @@ def run_pipeline(
         "stability": stability,
         "timing": timer.records,
         "pool_stats": all_pool_stats,
+        "selection": selection_records,
     }

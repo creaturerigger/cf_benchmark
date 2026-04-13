@@ -2,6 +2,7 @@ method:
   name: dice
   implementation: dice_ml
   init_path: /Users/volk/Documents/bau24-25/thesis/repos/DiCE-X
+  data_max_samples: 2000
 
 generation:
   total_cfs: 5

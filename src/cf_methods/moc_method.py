@@ -222,7 +222,7 @@ class MOCMethod(BaseCounterfactualGenerationMethod):
         self._ohe = tmp_ds.encoder
 
         scaler_cols = list(self._scaler.feature_names_in_)
-        ohe_cols = list(self._ohe.feature_names_in_)
+        ohe_cols = list(self._ohe.feature_names_in_) if self._ohe is not None else []
         categorical = self._categorical
 
         def predict_proba_fn(X: np.ndarray) -> np.ndarray:

@@ -13,6 +13,10 @@ class ResultsAggregator:
     ]
 
     def to_dataframe(self, records: list[dict]) -> pd.DataFrame:
+        if not records:
+            return pd.DataFrame(
+                columns=["query_uuid", "cf_index", "sigma"] + self.METRIC_COLS + ["is_pareto_optimal"],
+            )
         return pd.DataFrame(records)
 
     def aggregate_candidate_level(
@@ -20,6 +24,8 @@ class ResultsAggregator:
     ) -> pd.DataFrame:
         """Per-candidate stats grouped by (query_uuid, sigma)."""
         df = self.to_dataframe(records)
+        if df.empty:
+            return pd.DataFrame()
         return df.groupby(["query_uuid", "sigma"])[self.METRIC_COLS].describe()
 
     def aggregate_query_level(
@@ -27,6 +33,8 @@ class ResultsAggregator:
     ) -> pd.DataFrame:
         """Mean metrics per query_uuid across all candidates."""
         df = self.to_dataframe(records)
+        if df.empty:
+            return pd.DataFrame(columns=["query_uuid", "sigma"] + self.METRIC_COLS)
         return (
             df.groupby(["query_uuid", "sigma"])[self.METRIC_COLS]
             .mean()
@@ -38,7 +46,11 @@ class ResultsAggregator:
     ) -> pd.DataFrame:
         """Mean metrics computed only over Pareto-optimal candidates."""
         df = self.to_dataframe(records)
-        pareto = df[df["is_pareto_optimal"]]
+        if df.empty:
+            return pd.DataFrame(columns=["query_uuid", "sigma"] + self.METRIC_COLS)
+        pareto = df[df["is_pareto_optimal"] == True]  # noqa: E712
+        if pareto.empty:
+            return pd.DataFrame(columns=["query_uuid", "sigma"] + self.METRIC_COLS)
         return (
             pareto.groupby(["query_uuid", "sigma"])[self.METRIC_COLS]
             .mean()
@@ -50,6 +62,8 @@ class ResultsAggregator:
     ) -> pd.DataFrame:
         """Mean metrics across all queries per sigma level."""
         df = self.to_dataframe(records)
+        if df.empty:
+            return pd.DataFrame(columns=["sigma"] + self.METRIC_COLS)
         return (
             df.groupby("sigma")[self.METRIC_COLS]
             .mean()
@@ -71,6 +85,8 @@ class ResultsAggregator:
             frames.append(df)
 
         combined = pd.concat(frames, ignore_index=True)
+        if combined.empty:
+            return pd.DataFrame(columns=["dataset", "sigma"] + self.METRIC_COLS)
         return (
             combined.groupby(["dataset", "sigma"])[self.METRIC_COLS]
             .mean()

@@ -1,11 +1,14 @@
 #!/usr/bin/env python
-"""Minimal timing benchmark: run every (dataset × method) with tiny parameters
-to estimate how long the full-scale experiment will take.
+"""Timing benchmark: run every working (dataset × method) with small parameters
+to estimate how long full-scale experiments will take.
 
-Full-scale target: pool_size = 250 (e.g. runs=50, per_run=5),
-                   n_queries = 50,  M = 20,  sigmas = [0.01, 0.03, 0.05, 0.07, 0.10]
+Updated to reflect the refactored pipeline where:
+  - Original pools are built ONCE (not per sigma)
+  - Perturbed pools are built per sigma
+  - Selection analysis adds negligible overhead
 
-This script runs with: pool = 3×2 = 6, n_queries = 2, M = 2, 1 sigma.
+Mini params: pool=3×2=6, n_queries=2, M=2, 2 sigmas
+This gives enough info to separate original-pool vs perturbed-pool cost.
 """
 
 from __future__ import annotations
@@ -16,6 +19,7 @@ import sys
 import time
 from itertools import product
 
+import numpy as np
 import pandas as pd
 
 from src.orchestration.prefect_flow import run_pipeline
@@ -23,50 +27,61 @@ from src.orchestration.prefect_flow import run_pipeline
 DATASETS = ["adult", "compas", "german", "lending", "heloc", "credit_default"]
 METHODS = ["dice", "nice", "gs", "moc", "lore"]
 
+# Known broken combo — skip it
+SKIP = {("credit_default", "dice")}
+
 # Minimal overrides for fast timing
 MINI_OVERRIDES = {
     "pool": {"runs": 3, "per_run": 2},
     "perturbation": {"M": 2},
 }
 MINI_N_QUERIES = 2
-MINI_SIGMAS = [0.05]
-
-# Per-combo wall-clock timeout (seconds). If a combo exceeds this it's
-# recorded as a timeout so we can still estimate the rest.
-COMBO_TIMEOUT = 300  # 5 min
-
-# Full-scale parameters (for extrapolation)
-FULL_N_QUERIES = 50
-FULL_POOL_SIZE = 250          # runs × per_run
-FULL_M = 20
-FULL_N_SIGMAS = 5
+MINI_SIGMAS = [0.03, 0.05]  # 2 sigmas to measure per-sigma cost
 
 MINI_POOL_SIZE = MINI_OVERRIDES["pool"]["runs"] * MINI_OVERRIDES["pool"]["per_run"]
 MINI_M = MINI_OVERRIDES["perturbation"]["M"]
 MINI_N_SIGMAS = len(MINI_SIGMAS)
 
+# Per-combo wall-clock timeout (seconds)
+COMBO_TIMEOUT = 600  # 10 min
 
-def extrapolate(mini_seconds: float) -> float:
-    """Estimate full-scale time from a mini run.
 
-    The pipeline cost is dominated by CF generation which scales as:
-        n_queries × n_sigmas × (pool_size + M × pool_size)
+# ── Scenario definitions ──────────────────────────────────────
+
+SCENARIOS = {
+    "Lean": {"n_queries": 10, "pool_size": 250, "n_sigmas": 3, "M": 5},
+    "Moderate": {"n_queries": 15, "pool_size": 250, "n_sigmas": 3, "M": 5},
+    "Practical": {"n_queries": 20, "pool_size": 250, "n_sigmas": 3, "M": 5},
+    "Full": {"n_queries": 50, "pool_size": 250, "n_sigmas": 5, "M": 20},
+}
+
+
+def compute_work_units(n_queries, pool_size, n_sigmas, M):
+    """CF-generation work: original pool (once) + perturbed pools (per sigma).
+
+    work = n_queries × pool_size × (1 + n_sigmas × M)
     """
-    mini_work = MINI_N_QUERIES * MINI_N_SIGMAS * MINI_POOL_SIZE * (1 + MINI_M)
-    full_work = FULL_N_QUERIES * FULL_N_SIGMAS * FULL_POOL_SIZE * (1 + FULL_M)
-    factor = full_work / mini_work
-    return mini_seconds * factor
+    return n_queries * pool_size * (1 + n_sigmas * M)
+
+
+MINI_WORK = compute_work_units(MINI_N_QUERIES, MINI_POOL_SIZE, MINI_N_SIGMAS, MINI_M)
+
+
+def extrapolate(mini_seconds: float, scenario: dict) -> float:
+    """Estimate full-scale time from a mini run."""
+    full_work = compute_work_units(**scenario)
+    return mini_seconds * full_work / MINI_WORK
 
 
 def main():
     logging.basicConfig(
-        level=logging.WARNING,   # reduce noise
+        level=logging.WARNING,
         format="%(asctime)s %(levelname)s  %(message)s",
         stream=sys.stdout,
     )
-    # Suppress extremely noisy loggers completely
     for name in ("src.cf_methods.gs_method", "growingspheres",
-                 "src.cf_methods.lore_method", "lore_sa"):
+                 "src.cf_methods.lore_method", "lore_sa",
+                 "prefect", "prefect.flow_runs", "prefect.task_runs"):
         logging.getLogger(name).setLevel(logging.CRITICAL)
 
     class _Timeout(Exception):
@@ -78,11 +93,12 @@ def main():
     rows: list[dict] = []
     total_start = time.perf_counter()
 
-    for ds, method in product(DATASETS, METHODS):
+    combos = [(ds, m) for ds, m in product(DATASETS, METHODS) if (ds, m) not in SKIP]
+    n_combos = len(combos)
+
+    for i, (ds, method) in enumerate(combos, 1):
         combo = f"{ds} × {method}"
-        print(f"\n{'='*60}", flush=True)
-        print(f"  {combo}", flush=True)
-        print(f"{'='*60}", flush=True)
+        print(f"\n[{i}/{n_combos}] {combo}", flush=True)
 
         t0 = time.perf_counter()
         try:
@@ -113,37 +129,75 @@ def main():
             status = f"FAIL: {type(e).__name__}: {e}"
             timing = {}
 
-        estimated_full = extrapolate(elapsed)
-
-        rows.append({
+        row = {
             "dataset": ds,
             "method": method,
             "status": status,
             "mini_secs": round(elapsed, 2),
-            "est_full_secs": round(estimated_full, 1),
-            "est_full_mins": round(estimated_full / 60, 1),
-            "est_full_hours": round(estimated_full / 3600, 2),
             **{f"stage_{k}": v for k, v in timing.items()},
-        })
-        print(f"  ⏱  {elapsed:.2f}s  →  est. full: {estimated_full/60:.1f} min")
+        }
+        # Add estimates for each scenario
+        for name, scenario in SCENARIOS.items():
+            est = extrapolate(elapsed, scenario) if status == "OK" else float("nan")
+            row[f"est_{name}_hours"] = round(est / 3600, 2)
+
+        rows.append(row)
+        lean_est = row.get("est_Lean_hours", float("nan"))
+        print(f"  {elapsed:.1f}s  →  Lean est: {lean_est:.1f}h", flush=True)
 
     total_elapsed = time.perf_counter() - total_start
 
-    # Summary table
+    # ── Summary table ──────────────────────────────────────────
     df = pd.DataFrame(rows)
-    core_cols = ["dataset", "method", "status", "mini_secs",
-                 "est_full_secs", "est_full_mins", "est_full_hours"]
+    ok = df[df["status"] == "OK"]
+
     print("\n" + "=" * 80)
-    print("  TIMING SUMMARY")
+    print("  TIMING RESULTS")
     print("=" * 80)
-    print(df[core_cols].to_string(index=False))
+    summary_cols = ["dataset", "method", "status", "mini_secs"]
+    for name in SCENARIOS:
+        summary_cols.append(f"est_{name}_hours")
+    print(ok[summary_cols].to_string(index=False))
 
-    total_est_hours = df["est_full_hours"].sum()
-    print(f"\nMini benchmark total:  {total_elapsed/60:.1f} min")
-    print(f"Estimated full total:  {total_est_hours:.1f} hours")
-    print(f"  (sequential — can be parallelised across datasets/methods)")
+    # Failed combos
+    failed = df[df["status"] != "OK"]
+    if len(failed):
+        print(f"\nFailed ({len(failed)}):")
+        print(failed[["dataset", "method", "status"]].to_string(index=False))
 
-    # Save to CSV
+    # ── Per-scenario totals ────────────────────────────────────
+    print("\n" + "=" * 80)
+    print("  SCENARIO ESTIMATES (sequential total for all combos)")
+    print("=" * 80)
+    print(f"{'Scenario':<12} {'Params':<40} {'Total (h)':>10} {'4-core (h)':>11}")
+    print("-" * 75)
+    for name, scenario in SCENARIOS.items():
+        col = f"est_{name}_hours"
+        total_h = ok[col].sum()
+        params = (f"q={scenario['n_queries']}, σ={scenario['n_sigmas']}, "
+                  f"M={scenario['M']}, pool={scenario['pool_size']}")
+        print(f"{name:<12} {params:<40} {total_h:>10.1f} {total_h/4:>11.1f}")
+
+    # ── Per-method totals (Lean) ───────────────────────────────
+    print("\n" + "=" * 80)
+    print("  PER-METHOD TOTALS (Lean scenario)")
+    print("=" * 80)
+    method_totals = ok.groupby("method")["est_Lean_hours"].agg(["sum", "mean", "max"])
+    method_totals.columns = ["total_h", "mean_h", "max_h"]
+    print(method_totals.round(1).to_string())
+
+    # ── Per-dataset totals (Lean) ──────────────────────────────
+    print("\n" + "=" * 80)
+    print("  PER-DATASET TOTALS (Lean scenario)")
+    print("=" * 80)
+    ds_totals = ok.groupby("dataset")["est_Lean_hours"].agg(["sum", "mean", "max"])
+    ds_totals.columns = ["total_h", "mean_h", "max_h"]
+    print(ds_totals.round(1).to_string())
+
+    print(f"\nMini benchmark total: {total_elapsed/60:.1f} min")
+    print(f"Working combos: {len(ok)}/{len(df)}")
+
+    # Save
     import os
     out_path = "results/tables/timing_benchmark.csv"
     os.makedirs("results/tables", exist_ok=True)
@@ -153,3 +207,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+

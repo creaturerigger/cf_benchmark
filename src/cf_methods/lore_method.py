@@ -147,6 +147,9 @@ class LOREMethod(BaseCounterfactualGenerationMethod):
 
         # TabularDataset — LORE needs the training DataFrame *with* target
         lore_df = dataframe.copy()
+        # LORE requires a categorical target; cast to str so its
+        # descriptor classifies the column as non-numeric.
+        lore_df[target_column] = lore_df[target_column].astype(str)
         lore_dataset = TabularDataset(
             lore_df,
             class_name=target_column,

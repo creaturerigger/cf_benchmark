@@ -301,6 +301,11 @@ def save_pareto_cfs(
         Path to the written CSV.
     """
     rec_df = pd.DataFrame(records)
+    if rec_df.empty or "is_pareto_optimal" not in rec_df.columns:
+        dest = _ensure_dir(out_dir or DefaultPaths.rawPath)
+        path = dest / f"{dataset_name}_pareto_cfs.csv"
+        pd.DataFrame().to_csv(path, index=False)
+        return path
     pareto = rec_df[rec_df["is_pareto_optimal"]].copy()
 
     # Load the original CFs pool
@@ -347,6 +352,10 @@ def generate_all_figures(
         Dict mapping figure name to Figure object.
     """
     figures: dict[str, plt.Figure] = {}
+
+    if not records:
+        plt.close("all")
+        return figures
 
     # Stability curve
     if stability and "curve" in stability:
