@@ -156,6 +156,9 @@ cf_benchmark/
 - Python ≥ 3.10.13
 - [DiCE-X](https://github.com/Dice-Extended/dice-x) (custom fork of DiCE)
 - [NICEx](https://pypi.org/project/NICEx/) (Nearest Instance Counterfactual Explanations)
+- [GrowingSpheres](https://github.com/thibaultlaugel/growingspheres) (Geometric CF generation)
+- [LORE-SA](https://github.com/simonepri/lore-sa) (Rule-based CF generation)
+- [pymoo](https://pymoo.org/) ≥ 0.6.1 (Multi-objective optimisation for MOC; installed automatically)
 
 ### Setup
 
@@ -164,7 +167,7 @@ cf_benchmark/
 git clone https://github.com/creaturerigger/cf_benchmark.git
 cd cf_benchmark
 
-# Install dependencies
+# Install core dependencies (includes pymoo for MOC)
 pip install -e .
 
 # Clone and install DiCE-X (custom DiCE fork)
@@ -176,6 +179,20 @@ cd ../cf_benchmark
 
 # Install NICE (no-deps to avoid pinned-version conflicts)
 pip install NICEx --no-deps
+
+# Install GrowingSpheres (from source)
+cd ..
+git clone https://github.com/thibaultlaugel/growingspheres.git
+cd growingspheres
+pip install -e .
+cd ../cf_benchmark
+
+# Install LORE-SA (from source)
+cd ..
+git clone https://github.com/simonepri/lore-sa.git
+cd lore-sa
+pip install -e .
+cd ../cf_benchmark
 ```
 
 ## Datasets
