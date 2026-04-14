@@ -177,16 +177,21 @@ def build_perturbed_pools(
     p_type = perturbation_cfg.get("type", "gaussian")
     m = perturbation_cfg.get("M", 20)
     cont_indices = transformer.encoded_continuous_feature_indices
+    cat_groups = transformer.encoded_categorical_feature_indices or None
 
     if p_type == "gaussian":
         sigma = perturbation_cfg.get("sigma", 0.05)
         perturbation = GaussianPerturbation(
-            sigma=sigma, continuous_indices=cont_indices,
+            sigma=sigma,
+            continuous_indices=cont_indices,
+            categorical_groups=cat_groups,
         )
     elif p_type == "uniform":
         epsilon = perturbation_cfg.get("epsilon", 0.05)
         perturbation = UniformPerturbation(
-            epsilon=epsilon, continuous_indices=cont_indices,
+            epsilon=epsilon,
+            continuous_indices=cont_indices,
+            categorical_groups=cat_groups,
         )
     else:
         raise ValueError(f"Unsupported perturbation type: {p_type}")

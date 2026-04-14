@@ -34,3 +34,27 @@ class BasePerturbation(ABC):
             List of *m* perturbed tensors, each with the same shape as *x*.
         """
         return [self(x) for _ in range(m)]
+
+    @staticmethod
+    def resample_categorical_groups(
+        x: torch.Tensor,
+        groups: list[list[int]],
+        prob: float,
+    ) -> torch.Tensor:
+        """Randomly re-sample one-hot groups with probability *prob*.
+
+        For each one-hot group, with probability ``prob`` a uniformly
+        random category is activated (the rest are zeroed).  With
+        probability ``1 - prob`` the group is left unchanged (Slack et al., 2021).
+
+        Works for both (D,) and (B, D) shaped tensors.
+        """
+        for group_indices in groups:
+            k = len(group_indices)
+            if k < 2:
+                continue  # nothing to perturb for a single-category group
+            if torch.rand(1).item() < prob:
+                new_cat = torch.randint(0, k, (1,)).item()
+                x[..., group_indices] = 0.0
+                x[..., group_indices[new_cat]] = 1.0
+        return x
