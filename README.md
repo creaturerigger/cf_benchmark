@@ -157,7 +157,7 @@ cf_benchmark/
 - [DiCE-X](https://github.com/Dice-Extended/dice-x) (custom fork of DiCE)
 - [NICEx](https://pypi.org/project/NICEx/) (Nearest Instance Counterfactual Explanations)
 - [GrowingSpheres](https://github.com/thibaultlaugel/growingspheres) (Geometric CF generation)
-- [LORE-SA](https://github.com/simonepri/lore-sa) (Rule-based CF generation)
+- [LORE-SA](https://github.com/kdd-lab/LORE_sa) (Rule-based CF generation)
 - [pymoo](https://pymoo.org/) ≥ 0.6.1 (Multi-objective optimisation for MOC; installed automatically)
 
 ### Setup
@@ -189,8 +189,8 @@ cd ../cf_benchmark
 
 # Install LORE-SA (from source)
 cd ..
-git clone https://github.com/simonepri/lore-sa.git
-cd lore-sa
+git clone https://github.com/kdd-lab/LORE_sa.git
+cd LORE_sa
 pip install -e .
 cd ../cf_benchmark
 ```
@@ -215,8 +215,8 @@ Datasets are auto-downloaded and preprocessed on first use. Each dataset loader 
 | **DiCE** | Optimisation-based (OPT) | [DiCE-X](https://github.com/Dice-Extended/dice-x) | Diversity-focused; gradient-based search over differentiable loss |
 | **NICE** | Instance-based (IB) | [NICEx](https://pypi.org/project/NICEx/) | Nearest-neighbour with sparsity/proximity/plausibility optimisation; deterministic |
 | **GS** | Geometric (GEO) | [GrowingSpheres](https://github.com/thibaultlaugel/growingspheres) | Iterative hypersphere expansion to find decision boundary crossing |
-| **MOC** | Evolutionary (EVO) | [MOC](https://github.com/indyfree/moc) | Multi-objective counterfactuals via NSGA-II genetic algorithm |
-| **LORE** | Rule-based (RULE) | [LORE-SA](https://github.com/simonepri/lore-sa) | Neighbourhood generation + decision tree + rule extraction |
+| **MOC** | Evolutionary (EVO) | [pymoo](https://pymoo.org/) | Multi-objective counterfactuals via NSGA-II genetic algorithm (custom re-implementation of [Dandl et al., 2020](https://doi.org/10.1007/978-3-030-58112-1_31)) |
+| **LORE** | Rule-based (RULE) | [LORE-SA](https://github.com/kdd-lab/LORE_sa) | Neighbourhood generation + decision tree + rule extraction |
 
 Methods are registered via the `@register_method` decorator and instantiated at runtime through `create_method(cfg, model, dataframe, target_column, continuous_features)`. New methods only need to subclass `BaseCounterfactualGenerationMethod` and implement `generate()`.
 
