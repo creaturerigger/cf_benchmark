@@ -1,5 +1,10 @@
 # CF-Benchmark: Perturbation-Aware Counterfactual Robustness Framework
 
+[![license](https://img.shields.io/badge/license-MIT-green)](LICENSE.md)
+[![python](https://img.shields.io/badge/python-3.10%2B-blue)](https://www.python.org/)
+[![platform](https://img.shields.io/badge/platform-Linux%20%7C%20macOS%20%7C%20Windows-lightgrey)]()
+[![status](https://img.shields.io/badge/status-in%20progress-yellow)]()
+
 A perturbation-aware framework that formulates counterfactual explanation selection as a **stochastic multi-objective optimisation problem**, evaluating explanations under input uncertainty through geometric and intervention instability metrics.
 
 ## Overview
@@ -153,12 +158,11 @@ cf_benchmark/
 
 ### Prerequisites
 
-- Python ≥ 3.10.13
-- [DiCE-X](https://github.com/Dice-Extended/dice-x) (custom fork of DiCE)
-- [NICEx](https://pypi.org/project/NICEx/) (Nearest Instance Counterfactual Explanations)
-- [GrowingSpheres](https://github.com/thibaultlaugel/growingspheres) (Geometric CF generation)
-- [LORE-SA](https://github.com/kdd-lab/LORE_sa) (Rule-based CF generation)
-- [pymoo](https://pymoo.org/) ≥ 0.6.1 (Multi-objective optimisation for MOC; installed automatically)
+[![DiCE-X](https://img.shields.io/badge/DiCE--X-source-orange)](https://github.com/Dice-Extended/dice-x)
+[![NICEx](https://img.shields.io/badge/NICEx-PyPI-blue)](https://pypi.org/project/NICEx/)
+[![GrowingSpheres](https://img.shields.io/badge/GrowingSpheres-source-orange)](https://github.com/thibaultlaugel/growingspheres)
+[![LORE-SA](https://img.shields.io/badge/LORE--SA-source-orange)](https://github.com/kdd-lab/LORE_sa)
+[![pymoo](https://img.shields.io/badge/pymoo-%E2%89%A5%200.6.1-blue)](https://pymoo.org/)
 
 ### Setup
 
@@ -167,7 +171,8 @@ cf_benchmark/
 git clone https://github.com/creaturerigger/cf_benchmark.git
 cd cf_benchmark
 
-# Install core dependencies (includes pymoo for MOC)
+# Create venv and install core dependencies (includes pymoo for MOC)
+python -m venv .venv && source .venv/bin/activate
 pip install -e .
 
 # Clone and install DiCE-X (custom DiCE fork)
