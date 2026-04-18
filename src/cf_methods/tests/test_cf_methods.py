@@ -319,19 +319,37 @@ class TestDiCEMethodGenerate:
         result = dice_method.generate(query_instance=query, num_cfs=2)
         assert result is not None
 
+    def test_generate_returns_dice_result(self, dice_method, adult_like_df, continuous_features):
+        from src.cf_methods.dice_method import DiCEResult
+        query = adult_like_df[continuous_features].iloc[[0]]
+        result = dice_method.generate(query_instance=query, num_cfs=2)
+        assert isinstance(result, DiCEResult)
+
+    def test_to_dataframe_returns_df_or_none(self, dice_method, adult_like_df, continuous_features):
+        query = adult_like_df[continuous_features].iloc[[0]]
+        result = dice_method.generate(query_instance=query, num_cfs=2)
+        df = result.to_dataframe()
+        assert df is None or isinstance(df, pd.DataFrame)
+
     def test_generate_correct_number_of_cfs(self, dice_method, adult_like_df, continuous_features):
         query = adult_like_df[continuous_features].iloc[[0]]
         num_cfs = 3
         result = dice_method.generate(query_instance=query, num_cfs=num_cfs)
-        cfs_df = result.cf_examples_list[0].final_cfs_df
+        cfs_df = result.to_dataframe()
         assert len(cfs_df) == num_cfs
 
     def test_generate_cfs_have_correct_columns(self, dice_method, adult_like_df, continuous_features):
         query = adult_like_df[continuous_features].iloc[[0]]
         result = dice_method.generate(query_instance=query, num_cfs=2)
-        cfs_df = result.cf_examples_list[0].final_cfs_df
+        cfs_df = result.to_dataframe()
         for col in continuous_features:
             assert col in cfs_df.columns
+
+    def test_generate_cfs_exclude_target(self, dice_method, adult_like_df, continuous_features):
+        query = adult_like_df[continuous_features].iloc[[0]]
+        result = dice_method.generate(query_instance=query, num_cfs=2)
+        cfs_df = result.to_dataframe()
+        assert "income" not in cfs_df.columns
 
 
 # ---------------------------------------------------------------------------

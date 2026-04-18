@@ -24,11 +24,11 @@ import pandas as pd
 
 from src.orchestration.prefect_flow import run_pipeline
 
-DATASETS = ["adult", "compas", "german", "lending", "heloc", "credit_default"]
+DATASETS = ["adult", "compas", "german", "lending", "heloc", "diabetes"]
 METHODS = ["dice", "nice", "gs", "moc", "lore"]
 
 # Known broken combo — skip it
-SKIP = {("credit_default", "dice")}
+SKIP = set()
 
 # Minimal overrides for fast timing
 MINI_OVERRIDES = {

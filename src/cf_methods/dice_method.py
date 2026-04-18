@@ -1,8 +1,22 @@
+from dataclasses import dataclass
+
+import pandas as pd
 import dice_ml_x
 from dice_ml_x.constants import BackEndTypes
 
 from .base_cf_method import BaseCounterfactualGenerationMethod
 from .registry import register_method
+
+
+@dataclass
+class DiCEResult:
+    """Adapter so pool builder can call ``result.to_dataframe()``."""
+
+    cfs: pd.DataFrame | None
+    feature_names: list[str]
+
+    def to_dataframe(self) -> pd.DataFrame | None:
+        return self.cfs
 
 
 @register_method(name='dice')
@@ -61,14 +75,27 @@ class DiCEMethod(BaseCounterfactualGenerationMethod):
             **kwargs: forwarded to generate_counterfactuals (e.g.
                       desired_class, permitted_range, features_to_vary).
         Returns:
-            CounterfactualExplanations object from DiCE-X.
+            DiCEResult wrapping the generated CFs as a feature-only DataFrame.
         """
         gen_cfg = self.cfg.get("generation", {})
-        return self.explainer.generate_counterfactuals(
+        result = self.explainer.generate_counterfactuals(
             query_instance,
             total_CFs=num_cfs,
             desired_class=kwargs.pop("desired_class", gen_cfg.get("desired_class", "opposite")),
             proximity_weight=kwargs.pop("proximity_weight", gen_cfg.get("proximity_weight", 0.5)),
             diversity_weight=kwargs.pop("diversity_weight", gen_cfg.get("diversity_weight", 1.0)),
+            init_near_query_instance=kwargs.pop("init_near_query_instance",
+                                                gen_cfg.get("init_near_query_instance", True)),
             **kwargs,
         )
+
+        target_col = self.data_interface.outcome_name
+        feature_names = [
+            c for c in self.data_interface.feature_names
+        ]
+
+        cfs_df = result.cf_examples_list[0].final_cfs_df
+        if cfs_df is not None and len(cfs_df) > 0:
+            cfs_df = cfs_df.drop(columns=[target_col], errors="ignore")
+
+        return DiCEResult(cfs=cfs_df, feature_names=feature_names)

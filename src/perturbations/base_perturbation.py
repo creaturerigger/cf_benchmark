@@ -45,7 +45,7 @@ class BasePerturbation(ABC):
 
         For each one-hot group, with probability ``prob`` a uniformly
         random category is activated (the rest are zeroed).  With
-        probability ``1 - prob`` the group is left unchanged (Slack et al., 2021).
+        probability ``1 - prob`` the group is left unchanged.
 
         Works for both (D,) and (B, D) shaped tensors.
         """

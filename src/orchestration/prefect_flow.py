@@ -268,9 +268,19 @@ def run_pipeline(
             "Subsampling training data for CF method: %d → %d rows",
             len(train_df_for_method), max_samples,
         )
-        train_df_for_method = train_df_for_method.sample(
-            n=max_samples, random_state=seed,
-        )
+        # Stratified subsample: keep at least one row per category so
+        # the CF method's internal encoder sees every level the model
+        # was trained on (prevents dimension mismatches, e.g. lending).
+        cat_cols = data["categorical_cols"]
+        if cat_cols:
+            from src.data.preprocessing.py_dataset import _stratified_subsample
+            train_df_for_method = _stratified_subsample(
+                train_df_for_method, cat_cols, max_samples, seed,
+            )
+        else:
+            train_df_for_method = train_df_for_method.sample(
+                n=max_samples, random_state=seed,
+            )
     cf_method = create_method(
         cfg,
         model,

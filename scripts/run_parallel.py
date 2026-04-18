@@ -41,18 +41,18 @@ from itertools import product
 from pathlib import Path
 
 # ── Combos ────────────────────────────────────────────────────
-DATASETS = ["adult", "compas", "german", "lending", "heloc", "credit_default"]
+DATASETS = ["adult", "compas", "german", "lending", "heloc", "diabetes"]
 METHODS = ["dice", "nice", "gs", "moc", "lore"]
 
 # Known broken — always skip
-ALWAYS_SKIP = {("credit_default", "dice")}
+ALWAYS_SKIP = set()
 
 # Pre-defined scenarios
 SCENARIOS = {
-    "lean":     {"n_queries": 10, "n_sigmas": 3, "M": 5},
-    "moderate": {"n_queries": 15, "n_sigmas": 3, "M": 5},
-    "practical":{"n_queries": 20, "n_sigmas": 3, "M": 5},
-    "full":     {"n_queries": 50, "n_sigmas": 5, "M": 20},
+    "lean":     {"n_queries": 10, "n_sigmas": 3, "M": 5,  "pool_runs": 50, "pool_per_run": 5},
+    "moderate": {"n_queries": 15, "n_sigmas": 3, "M": 5,  "pool_runs": 50, "pool_per_run": 5},
+    "practical":{"n_queries": 20, "n_sigmas": 3, "M": 5,  "pool_runs": 50, "pool_per_run": 5},
+    "full":     {"n_queries": 50, "n_sigmas": 5, "M": 20, "pool_runs": 50, "pool_per_run": 5},
 }
 
 DEFAULT_SIGMAS = {
@@ -198,6 +198,8 @@ def main():
         n_queries = sc["n_queries"]
         M = sc["M"]
         n_sigmas = sc["n_sigmas"]
+        args.pool_runs = sc.get("pool_runs", args.pool_runs)
+        args.pool_per_run = sc.get("pool_per_run", args.pool_per_run)
         sigmas = args.sigmas or DEFAULT_SIGMAS.get(n_sigmas, [0.03, 0.05, 0.07])
     else:
         n_queries = args.n_queries

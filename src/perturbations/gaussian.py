@@ -12,7 +12,7 @@ class GaussianPerturbation(BasePerturbation):
     Categorical: for each one-hot group, with probability ``cat_prob``
         the active category is replaced by a uniformly random category
         from the same group.  Default ``cat_prob = sigma`` so a single
-        σ knob controls both perturbation strengths (Slack et al., 2021).
+        σ knob controls both perturbation strengths.
 
     Args:
         sigma: standard deviation of the Gaussian noise.

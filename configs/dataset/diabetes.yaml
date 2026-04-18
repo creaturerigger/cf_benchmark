@@ -1,0 +1,8 @@
+dataset:
+    name: diabetes
+    url: https://archive.ics.uci.edu/static/public/296/diabetes+130-us+hospitals+for+years+1999-2008.zip
+download_location: src/data/datasets/downloads
+specs:
+    target: readmitted
+    train_size: 80
+    train_only: False

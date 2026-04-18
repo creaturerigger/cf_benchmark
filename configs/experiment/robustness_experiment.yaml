@@ -16,6 +16,8 @@ perturbation:
   M: 20
 
 robustness:
+  geometric_metric: l2
+  intervention_metric: jaccard_index
   alpha: 1
   beta: 1
   gamma: 0.5

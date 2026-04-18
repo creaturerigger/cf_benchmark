@@ -5,6 +5,33 @@ from sklearn.model_selection import train_test_split
 import pandas as pd
 
 
+def _stratified_subsample(
+    df: pd.DataFrame,
+    cat_cols: list[str],
+    n: int,
+    seed: int,
+) -> pd.DataFrame:
+    """Subsample *df* to *n* rows while keeping at least one row per category.
+
+    For every unique value in each categorical column, one representative row
+    is reserved first.  The remaining budget is filled by random sampling from
+    the rest of the dataframe.
+    """
+    reserved_idx: set[int] = set()
+    for col in cat_cols:
+        for _val, grp in df.groupby(col):
+            reserved_idx.add(grp.index[0])
+
+    reserved = df.loc[list(reserved_idx)]
+    remainder = df.drop(index=reserved.index)
+
+    budget = max(n - len(reserved), 0)
+    if budget > 0 and len(remainder) > 0:
+        fill = remainder.sample(n=min(budget, len(remainder)), random_state=seed)
+        return pd.concat([reserved, fill]).reset_index(drop=True)
+    return reserved.head(n).reset_index(drop=True)
+
+
 class PYTDataset(torch.utils.data.Dataset):
     def __init__(self, dataframe: pd.DataFrame, target_column: str,
                  scaler=None, encoder=None, target_encoder=None,

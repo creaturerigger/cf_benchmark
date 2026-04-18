@@ -9,6 +9,7 @@ generation:
   desired_class: opposite
   proximity_weight: 0.5
   diversity_weight: 1.0
+  init_near_query_instance: True
 
 search:
   algorithm: gradient

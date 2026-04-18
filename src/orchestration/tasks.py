@@ -18,7 +18,6 @@ from src.models.trainer import Trainer
 from src.pool.pool_builder import CFPoolBuilder
 from src.perturbations.gaussian import GaussianPerturbation
 from src.perturbations.uniform import UniformPerturbation
-from src.utils.constants import DefaultPaths
 from src.robustness.matcher import NearestCFMatcher
 from src.evaluation.experiment import RobustnessExperiment
 from src.evaluation.aggregator import ResultsAggregator
@@ -68,7 +67,6 @@ def load_and_prepare_data(
         "categorical_cols": categorical_cols,
         "target_column": target_column,
     }
-
 
 # Tasks: Model Training
 
@@ -269,7 +267,7 @@ def run_robustness_evaluation(
         List of flat dicts for aggregation.
     """
     geo_metric = GeometricDistanceType(
-        robustness_cfg.get("geometric_metric", "l1"),
+        robustness_cfg.get("geometric_metric", "l2"),
     )
     int_metric = InterventionDistanceType(
         robustness_cfg.get("intervention_metric", "jaccard_index"),
