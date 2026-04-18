@@ -49,11 +49,12 @@ ALWAYS_SKIP = set()
 
 # Pre-defined scenarios
 SCENARIOS = {
-    "lean":     {"n_queries": 10, "n_sigmas": 3, "M": 5,  "pool_runs": 50, "pool_per_run": 5},
-    "moderate": {"n_queries": 15, "n_sigmas": 3, "M": 5,  "pool_runs": 50, "pool_per_run": 5},
-    "practical":{"n_queries": 20, "n_sigmas": 3, "M": 5,  "pool_runs": 50, "pool_per_run": 5},
-    "full":     {"n_queries": 50, "n_sigmas": 5, "M": 20, "pool_runs": 50, "pool_per_run": 5},
-}
+             "budget": {"n_queries": 10, "n_sigmas": 3, "M": 3,  "pool_runs": 50, "pool_per_run": 5},
+             "lean": {"n_queries": 10, "n_sigmas": 3, "M": 5,  "pool_runs": 50, "pool_per_run": 5},
+             "moderate": {"n_queries": 15, "n_sigmas": 3, "M": 5,  "pool_runs": 50, "pool_per_run": 5},
+             "practical": {"n_queries": 20, "n_sigmas": 3, "M": 5,  "pool_runs": 50, "pool_per_run": 5},
+             "full":     {"n_queries": 50, "n_sigmas": 5, "M": 20, "pool_runs": 50, "pool_per_run": 5},
+            }
 
 DEFAULT_SIGMAS = {
     3: [0.03, 0.05, 0.07],
@@ -172,7 +173,12 @@ def main():
     parser.add_argument("--seed", type=int, default=42)
     parser.add_argument("--pool-runs", type=int, default=50)
     parser.add_argument("--pool-per-run", type=int, default=5)
-    parser.add_argument("--min-pool-size", type=int, default=0)
+    parser.add_argument("--min-pool-size", type=int, default=1,
+                        help="Reuse existing original pools with at least this many CFs (default: 1)")
+    parser.add_argument(
+        "--resume", action="store_true",
+        help="Skip combos already marked OK in results/tables/parallel_run_results.csv"
+    )
     parser.add_argument(
         "--timeout", type=int, default=0,
         help="Per-combo timeout in seconds (0 = no limit)"
@@ -217,6 +223,22 @@ def main():
     if args.exclude:
         skip_set = {tuple(c.split(",")) for c in args.exclude}
     combos = [c for c in combos if c not in skip_set]
+
+    # ── Resume: skip already-OK combos ────────────────────────
+    out_path = Path("results/tables/parallel_run_results.csv")
+    if args.resume and out_path.is_file():
+        import pandas as _pd
+        prev = _pd.read_csv(out_path)
+        done = set(
+            zip(prev.loc[prev["status"] == "OK", "dataset"],
+                prev.loc[prev["status"] == "OK", "method"])
+        )
+        skipped = [c for c in combos if c in done]
+        combos = [c for c in combos if c not in done]
+        if skipped:
+            print(f"  Resuming: skipping {len(skipped)} already-OK combos")
+            for ds, m in skipped:
+                print(f"    {ds} × {m}")
 
     # ── Workers ────────────────────────────────────────────────
     ncpus = mp.cpu_count()
@@ -276,6 +298,12 @@ def main():
     import pandas as pd
 
     df = pd.DataFrame(results)
+
+    # Merge with previous results when resuming
+    if args.resume and out_path.is_file():
+        prev = pd.read_csv(out_path)
+        prev_ok = prev[prev["status"] == "OK"]
+        df = pd.concat([prev_ok, df], ignore_index=True)
     ok = df[df["status"] == "OK"]
     failed = df[df["status"] != "OK"]
 
