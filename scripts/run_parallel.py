@@ -34,8 +34,8 @@ import json
 import logging
 import multiprocessing as mp
 import os
-import signal
 import sys
+import threading
 import time
 from itertools import product
 from pathlib import Path
@@ -100,17 +100,6 @@ def _run_one_combo(args: dict) -> dict:
 
     t0 = time.perf_counter()
     try:
-        # Timeout via SIGALRM (Unix only)
-        if timeout > 0:
-            class _Timeout(Exception):
-                pass
-
-            def _alarm_handler(signum, frame):
-                raise _Timeout()
-
-            signal.signal(signal.SIGALRM, _alarm_handler)
-            signal.alarm(timeout)
-
         from src.orchestration.prefect_flow import run_pipeline
 
         result = run_pipeline(
@@ -123,8 +112,6 @@ def _run_one_combo(args: dict) -> dict:
             sigmas=sigmas,
             overrides=overrides,
         )
-        if timeout > 0:
-            signal.alarm(0)
 
         elapsed = time.perf_counter() - t0
         status = "OK"
@@ -132,14 +119,8 @@ def _run_one_combo(args: dict) -> dict:
         n_records = len(result.get("records", []))
 
     except Exception as e:
-        if timeout > 0:
-            signal.alarm(0)
         elapsed = time.perf_counter() - t0
-        etype = type(e).__name__
-        if "Timeout" in etype or "alarm" in str(e).lower():
-            status = f"TIMEOUT ({timeout}s)"
-        else:
-            status = f"FAIL: {etype}: {e}"
+        status = f"FAIL: {type(e).__name__}: {e}"
         timing = {}
         n_records = 0
 
@@ -148,11 +129,22 @@ def _run_one_combo(args: dict) -> dict:
     return {
         "dataset": ds,
         "method": method,
+        "pid": pid,
         "status": status,
         "elapsed_secs": round(elapsed, 2),
         "n_records": n_records,
         **{f"stage_{k}": round(v, 2) for k, v in timing.items()},
     }
+
+
+def _worker_with_queue(q: "mp.Queue", args: dict) -> None:
+    """Thin wrapper: run _run_one_combo and push the result into a queue.
+
+    Running inside a dedicated child process so the parent can kill it
+    cleanly on timeout without touching any signal handlers.
+    """
+    result = _run_one_combo(args)
+    q.put(result)
 
 
 def main():
@@ -287,10 +279,52 @@ def main():
     # ── Run ────────────────────────────────────────────────────
     wall_start = time.perf_counter()
 
-    # Use spawn to avoid fork issues with PyTorch / Prefect
+    # Each combo runs in its own dedicated process so the parent can
+    # enforce a hard timeout via process.kill() without touching signal
+    # handlers inside PyTorch C extensions.
     ctx = mp.get_context("spawn")
-    with ctx.Pool(processes=workers) as pool:
-        results = pool.map(_run_one_combo, work_items)
+    combo_timeout = args.timeout if args.timeout > 0 else None
+    sem = threading.Semaphore(workers)
+    results: list[dict] = []
+    results_lock = threading.Lock()
+
+    def _run_combo_in_process(item: dict) -> None:
+        q: mp.Queue = ctx.Queue()
+        p = ctx.Process(target=_worker_with_queue, args=(q, item))
+        p.start()
+        p.join(combo_timeout)
+        if p.is_alive():
+            # Hard-kill the process — no signal juggling inside the worker
+            p.kill()
+            p.join()
+            row = {
+                "dataset": item["dataset"],
+                "method": item["method"],
+                "pid": p.pid,
+                "status": f"TIMEOUT ({args.timeout}s)",
+                "elapsed_secs": args.timeout,
+                "n_records": 0,
+            }
+            print(
+                f"[{item['dataset']}_{item['method']}] TIMEOUT  "
+                f"(>{args.timeout}s, killed pid={p.pid})",
+                flush=True,
+            )
+        else:
+            row = q.get()
+        with results_lock:
+            results.append(row)
+        sem.release()
+
+    threads = []
+    for item in work_items:
+        sem.acquire()
+        t = threading.Thread(target=_run_combo_in_process, args=(item,), daemon=True)
+        t.start()
+        threads.append(t)
+
+    for t in threads:
+        t.join()
 
     wall_elapsed = time.perf_counter() - wall_start
 
