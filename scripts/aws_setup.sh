@@ -31,8 +31,44 @@ echo "=== Install dependencies ==="
 pip install --upgrade pip
 pip install -e ".[dev]" 2>/dev/null || pip install -e .
 
-echo "=== Verify import ==="
-python -c "from src.orchestration.prefect_flow import run_pipeline; print('Import OK')"
+echo "=== Install nicex (--no-deps to bypass stale pandas constraint) ==="
+pip install nicex==0.2.3 --no-deps
+
+echo "=== Install growingspheres (no PyPI — copy from GitHub) ==="
+if [ ! -d "../growingspheres" ]; then
+    git clone https://github.com/thibaultlaugel/growingspheres.git ../growingspheres
+fi
+cp -r ../growingspheres/growingspheres .venv/lib/python3.*/site-packages/
+
+echo "=== Install DiCE-X (local editable) ==="
+if [ ! -d "../DiCE-X" ]; then
+    git clone https://github.com/creaturerigger/DiCE-X.git ../DiCE-X
+fi
+pip install -e ../DiCE-X
+
+echo "=== Install lore-sa (not on PyPI — install from GitHub) ==="
+if [ ! -d "../LORE_sa" ]; then
+    git clone https://github.com/kdd-lab/LORE_sa.git ../LORE_sa
+fi
+pip install -e ../LORE_sa
+
+echo "=== Install lore_sa transitive deps (not in pyproject.toml) ==="
+pip install deap==1.4.3
+pip install liac-arff
+pip install scikit-multilearn
+
+echo "=== Verify imports ==="
+python -c "
+import growingspheres
+import deap
+import arff
+import skmultilearn
+import lore_sa
+import nicex
+import dice_ml
+from src.orchestration.prefect_flow import run_pipeline
+print('All imports OK')
+"
 
 echo ""
 echo "============================================"
