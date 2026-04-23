@@ -288,6 +288,21 @@ def main():
     results: list[dict] = []
     results_lock = threading.Lock()
 
+    # Incremental save path — written after every combo so --resume
+    # always has up-to-date state even if the run is interrupted.
+    out_dir = Path("results/tables")
+    out_dir.mkdir(parents=True, exist_ok=True)
+    out_path = Path("results/tables/parallel_run_results.csv")
+
+    _CSV_COLS = ["dataset", "method", "status", "elapsed_secs", "n_records"]
+
+    def _append_row(row: dict) -> None:
+        import pandas as _pd
+        write_header = not out_path.exists()
+        _pd.DataFrame([{k: row.get(k) for k in _CSV_COLS}]).to_csv(
+            out_path, mode="a", header=write_header, index=False
+        )
+
     def _run_combo_in_process(item: dict) -> None:
         q: mp.Queue = ctx.Queue()
         p = ctx.Process(target=_worker_with_queue, args=(q, item))
@@ -314,6 +329,7 @@ def main():
             row = q.get()
         with results_lock:
             results.append(row)
+            _append_row(row)
         sem.release()
 
     threads = []
@@ -356,10 +372,8 @@ def main():
     print(f"CPU time:   {cpu_hours:.2f}h")
     print(f"Speedup:    {cpu_hours / (wall_elapsed/3600):.1f}x over sequential")
 
-    # Save
-    out_dir = Path("results/tables")
-    out_dir.mkdir(parents=True, exist_ok=True)
-    out_path = out_dir / "parallel_run_results.csv"
+    # Rewrite the full merged CSV (incremental appends already happened
+    # per-combo; this final write ensures a clean, deduplicated file).
     df.to_csv(out_path, index=False)
     print(f"Saved to {out_path}")
 
