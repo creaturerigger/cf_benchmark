@@ -1,0 +1,12 @@
+age,workclass,education,marital_status,occupation,race,gender,hours_per_week,query_id
+31,Self-Employed,Doctorate,Single,Professional,White,Male,40,9211c618-8a8d-4004-a3d8-7bb15567d2b3
+20,Other/Unknown,Some-college,Single,Other/Unknown,White,Male,40,1ab692b4-13e2-44d3-9f4b-3cd71f1f00ed
+78,Self-Employed,Bachelors,Married,White-Collar,White,Male,45,7f94233d-b1ca-4b6b-9911-d7d2585c0409
+32,Private,Bachelors,Married,Blue-Collar,White,Male,44,3a0cdc0a-b75a-43ed-9caf-f65c00644bf3
+61,Private,HS-grad,Married,White-Collar,White,Male,3,52e849ae-51c1-4923-8831-d3a2396e4b76
+32,Private,School,Married,Service,White,Male,40,d8e53ba2-4146-4d48-a7f3-29d2fe9438a6
+33,Private,School,Divorced,Blue-Collar,White,Male,55,026cfec7-077a-4951-8012-5e44a41bd686
+39,Private,Masters,Single,White-Collar,White,Male,40,c0aa0931-5d9f-47ab-a336-42627a8dbfd5
+49,Private,Assoc,Married,Sales,White,Male,25,d86458e5-0450-44c4-b1b3-f0204a987f0d
+45,Private,HS-grad,Divorced,Service,White,Male,40,71fdda35-7c20-45fa-ac46-5c684f1f4080
+31,Self-Employed,Doctorate,Single,Professional,White,Male,40,43936c08-7125-4c94-bf47-796aae0d2033

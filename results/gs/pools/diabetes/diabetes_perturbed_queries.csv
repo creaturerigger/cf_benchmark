@@ -1,0 +1,5 @@
+age,time_in_hospital,num_lab_procedures,num_procedures,num_medications,number_outpatient,number_emergency,number_inpatient,number_diagnoses,A1Cresult,change,diabetesMed,gender,max_glu_serum,race,query_id
+87.50024,7.2301984,79.07742,1.9014566,18.145214,0.0,0.0,0.009888089,9.192518,NotMeasured,Ch,Yes,Male,NotMeasured,Caucasian,fecf73ee-6ea9-4c0f-ac71-8b4244667b0c
+79.86466,6.8251996,80.17459,2.108485,16.447937,0.0,2.0368614,0.23682362,9.173864,NotMeasured,Ch,Yes,Male,NotMeasured,Caucasian,fecf73ee-6ea9-4c0f-ac71-8b4244667b0c
+85.54505,7.331404,83.19626,1.8450308,15.630455,0.25650257,1.1489195,0.17202088,8.935376,NotMeasured,Ch,Yes,Male,NotMeasured,Caucasian,fecf73ee-6ea9-4c0f-ac71-8b4244667b0c
+53.169823,2.2890089,46.34848,0.12813458,5.8600335,0.0,0.0,0.18156278,5.266425,NotMeasured,Ch,Yes,Male,NotMeasured,AfricanAmerican,9559d0aa-d01b-47ed-bcc4-b50c6da23cbd

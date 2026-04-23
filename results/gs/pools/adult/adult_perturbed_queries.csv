@@ -1,0 +1,8 @@
+age,hours_per_week,education,gender,marital_status,occupation,race,workclass,query_id
+32.13273,35.253407,Doctorate,Male,Single,Blue-Collar,White,Self-Employed,972dca13-89fa-4e22-b22d-527fddc21798
+26.348484,38.577847,Doctorate,Male,Single,Professional,White,Self-Employed,972dca13-89fa-4e22-b22d-527fddc21798
+30.082401,40.058445,Doctorate,Male,Single,Professional,White,Self-Employed,972dca13-89fa-4e22-b22d-527fddc21798
+18.381662,44.843513,Some-college,Male,Single,Other/Unknown,White,Other/Unknown,aaaecc1b-5070-4b3c-8810-286b704d0770
+22.266787,41.404835,Some-college,Male,Single,Other/Unknown,White,Other/Unknown,aaaecc1b-5070-4b3c-8810-286b704d0770
+20.953033,39.864994,Some-college,Male,Single,Other/Unknown,White,Other/Unknown,aaaecc1b-5070-4b3c-8810-286b704d0770
+76.32618,40.901413,Bachelors,Male,Single,White-Collar,White,Self-Employed,6f381cbe-b277-4c4d-b685-f362e607fbae

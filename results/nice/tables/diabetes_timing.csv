@@ -1,0 +1,12 @@
+stage,seconds
+data_loading,2.87
+model_training,174.308
+pool_building,70.019
+perturbed_pools_sigma0.03,198.152
+evaluation_sigma0.03,0.312
+perturbed_pools_sigma0.05,169.873
+evaluation_sigma0.05,0.344
+perturbed_pools_sigma0.07,164.363
+evaluation_sigma0.07,0.497
+selection_analysis,0.02
+aggregation,0.322

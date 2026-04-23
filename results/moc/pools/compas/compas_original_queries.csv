@@ -1,0 +1,13 @@
+sex,age,priors_count,race,c_charge_degree,query_id
+Male,41.0,1.0,Caucasian,F,19a54173-f7f3-4833-8deb-357f319fcb53
+Male,27.0,0.0,Caucasian,F,d243ad43-9c35-40d4-8c13-1a2e5aad4d15
+Female,40.0,0.0,Caucasian,M,add3c9e7-a1b6-4e3a-b104-5c05181053a7
+Female,57.0,4.0,Caucasian,F,9da27507-a0e1-4264-bf89-4a545fcdfa1d
+Male,25.0,5.0,Caucasian,M,a99a3acc-21a2-42bf-8ae9-8b980a53d9b4
+Male,30.0,6.0,African-American,F,b429a946-0419-45fa-b168-0adbfc9b5004
+Female,33.0,5.0,African-American,F,80722ed9-55dc-48f3-a75b-2c67c9ad5632
+Male,37.0,4.0,Caucasian,M,c67b2428-1749-423a-a016-cbb9d750b1c8
+Male,44.0,3.0,African-American,M,6829ce76-87f2-436d-8078-07d5180daa9d
+Male,24.0,1.0,African-American,F,53d1f9aa-027f-4a08-a501-a47d64f4cd72
+Male,41.0,1.0,Caucasian,F,ed7bc279-c961-4d95-bf83-a56690162174
+Male,27.0,0.0,Caucasian,F,78e47582-0a20-4bf3-97f6-9e01a506d8bf
