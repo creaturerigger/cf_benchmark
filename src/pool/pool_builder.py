@@ -64,7 +64,10 @@ class CFPoolBuilder:
         batch = []
         all_generated = []
         for i in range(self.runs):
-            result = self.cf_method.generate(x, self.per_run)
+            try:
+                result = self.cf_method.generate(x, self.per_run)
+            except Exception:
+                continue
             cfs_df = result.to_dataframe()
             if cfs_df is not None and len(cfs_df) > 0:
                 cfs_df = cfs_df.copy()
