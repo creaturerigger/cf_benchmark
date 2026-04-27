@@ -145,15 +145,18 @@ class LOREMethod(BaseCounterfactualGenerationMethod):
             categorical_features=self._categorical,
         )
 
-        # TabularDataset — LORE needs the training DataFrame *with* target
+        # TabularDataset — LORE needs the training DataFrame *with* target.
+        # The target must be categorical (non-numeric) so TabularDataset
+        # doesn't raise "target column cannot be continuous".
+        # We keep the target as integers but pass it in categorial_columns so
+        # the descriptor classifies it as categorical — avoiding the sklearn
+        # OrdinalEncoder isnan bug that occurs when the target is cast to str.
         lore_df = dataframe.copy()
-        # LORE requires a categorical target; cast to str so its
-        # descriptor classifies the column as non-numeric.
-        lore_df[target_column] = lore_df[target_column].astype(str)
+        lore_df[target_column] = lore_df[target_column].astype(int)
         lore_dataset = TabularDataset(
             lore_df,
             class_name=target_column,
-            categorial_columns=self._categorical,
+            categorial_columns=self._categorical + [target_column],
         )
 
         # Explainer
