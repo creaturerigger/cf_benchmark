@@ -1,0 +1,16 @@
+sex,age,priors_count,race,c_charge_degree,query_id
+Female,19.0,2.1,Caucasian,F,8778fe6b-ce4b-437a-93a1-e7b1dff97942
+Male,19.0,6.5,Caucasian,F,8778fe6b-ce4b-437a-93a1-e7b1dff97942
+Female,41.3,7.7,Caucasian,F,8778fe6b-ce4b-437a-93a1-e7b1dff97942
+Male,33.1,10.9,Caucasian,F,8778fe6b-ce4b-437a-93a1-e7b1dff97942
+Male,48.3,15.1,Caucasian,F,8778fe6b-ce4b-437a-93a1-e7b1dff97942
+Female,19.0,2.4,Caucasian,F,86b93e4f-5401-44a8-9b72-b3c7059be8c8
+Male,19.0,4.0,African-American,M,86b93e4f-5401-44a8-9b72-b3c7059be8c8
+Female,34.6,9.1,Caucasian,F,86b93e4f-5401-44a8-9b72-b3c7059be8c8
+Male,19.0,7.7,Caucasian,F,86b93e4f-5401-44a8-9b72-b3c7059be8c8
+Male,27.2,14.3,Caucasian,F,86b93e4f-5401-44a8-9b72-b3c7059be8c8
+Female,19.0,2.4,Caucasian,F,86c0e1ad-c70a-48f8-a201-d1744177e952
+Female,39.7,8.0,Caucasian,F,86c0e1ad-c70a-48f8-a201-d1744177e952
+Female,21.5,5.4,African-American,M,86c0e1ad-c70a-48f8-a201-d1744177e952
+Female,35.0,9.9,Caucasian,M,86c0e1ad-c70a-48f8-a201-d1744177e952
+Female,41.6,17.1,Caucasian,M,86c0e1ad-c70a-48f8-a201-d1744177e952

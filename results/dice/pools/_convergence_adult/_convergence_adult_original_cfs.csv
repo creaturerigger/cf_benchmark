@@ -1,0 +1,16 @@
+age,workclass,education,marital_status,occupation,race,gender,hours_per_week,query_id
+63,Private,Prof-school,Widowed,Other/Unknown,White,Male,40,fd41b854-31c8-4ea7-9ec4-4ec54bfb7de8
+41,Self-Employed,Bachelors,Single,Sales,Other,Male,37,fd41b854-31c8-4ea7-9ec4-4ec54bfb7de8
+29,Private,Assoc,Divorced,Sales,Other,Male,40,fd41b854-31c8-4ea7-9ec4-4ec54bfb7de8
+43,Private,Bachelors,Single,Professional,White,Female,47,fd41b854-31c8-4ea7-9ec4-4ec54bfb7de8
+31,Private,Bachelors,Separated,Professional,White,Male,66,fd41b854-31c8-4ea7-9ec4-4ec54bfb7de8
+59,Private,Some-college,Widowed,Other/Unknown,White,Male,40,921dcf99-5882-46ca-b213-b25bf8de041b
+30,Private,Some-college,Single,Sales,Other,Male,34,921dcf99-5882-46ca-b213-b25bf8de041b
+38,Other/Unknown,Some-college,Single,Other/Unknown,Other,Female,40,921dcf99-5882-46ca-b213-b25bf8de041b
+21,Private,Bachelors,Divorced,Other/Unknown,White,Male,48,921dcf99-5882-46ca-b213-b25bf8de041b
+21,Other/Unknown,Bachelors,Single,Other/Unknown,Other,Male,65,921dcf99-5882-46ca-b213-b25bf8de041b
+53,Self-Employed,Bachelors,Married,Sales,Other,Male,47,b1df65bf-3e12-4989-ae3d-f452916412e9
+88,Private,Bachelors,Married,White-Collar,Other,Male,35,b1df65bf-3e12-4989-ae3d-f452916412e9
+72,Other/Unknown,Bachelors,Widowed,White-Collar,Other,Female,43,b1df65bf-3e12-4989-ae3d-f452916412e9
+75,Private,Bachelors,Married,White-Collar,White,Male,58,b1df65bf-3e12-4989-ae3d-f452916412e9
+79,Self-Employed,Bachelors,Married,White-Collar,Other,Male,74,b1df65bf-3e12-4989-ae3d-f452916412e9

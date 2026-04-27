@@ -1,0 +1,4 @@
+age,workclass,education,marital_status,occupation,race,gender,hours_per_week,query_id
+31,Self-Employed,Doctorate,Single,Professional,White,Male,40,fd41b854-31c8-4ea7-9ec4-4ec54bfb7de8
+20,Other/Unknown,Some-college,Single,Other/Unknown,White,Male,40,921dcf99-5882-46ca-b213-b25bf8de041b
+78,Self-Employed,Bachelors,Married,White-Collar,White,Male,45,b1df65bf-3e12-4989-ae3d-f452916412e9

@@ -1,25 +1,2 @@
-dataset,method,status,elapsed_secs,n_records
-adult,nice,OK,0,0.0
-compas,nice,OK,0,0.0
-german,nice,OK,0,0.0
-lending,nice,OK,0,0.0
-heloc,nice,OK,0,0.0
-diabetes,nice,OK,0,0.0
-adult,moc,OK,0,0.0
-compas,moc,OK,0,0.0
-german,moc,OK,0,0.0
-lending,moc,OK,0,0.0
-heloc,moc,OK,0,0.0
-diabetes,moc,OK,OK,92907.16
-compas,lore,OK,OK,104301.97
-diabetes,dice,OK,OK,111722.45
-lending,dice,OK,FAIL: UserConfigValidationException: No counterfactuals found for any of the query points! Kindly check your configuration.,112900.08
-heloc,lore,OK,OK,118942.56
-adult,lore,OK,OK,141376.76
-diabetes,lore,OK,OK,143928.55
-adult,dice,OK,OK,145408.26
-compas,dice,OK,OK,159357.53
-german,lore,OK,OK,181600.66
-lending,lore,OK,OK,182083.89
-heloc,dice,OK,OK,195926.74
-german,dice,OK,OK,217457.99
+dataset,method,pid,status,elapsed_secs,n_records,stage_data_loading,stage_model_training,stage_pool_building,stage_perturbed_pools_sigma0.03,stage_evaluation_sigma0.03,stage_perturbed_pools_sigma0.05,stage_evaluation_sigma0.05,stage_perturbed_pools_sigma0.07,stage_evaluation_sigma0.07,stage_selection_analysis,stage_aggregation,stage_save_artefacts
+lending,dice,40168,OK,58773.09,150,0.37,0.01,3467.47,40179.01,0.04,6951.7,0.04,8169.34,0.04,0.01,0.04,0.85

@@ -1,0 +1,10 @@
+age,hours_per_week,education,gender,marital_status,occupation,race,workclass,query_id
+30.103647,50.20942,Doctorate,Male,Single,Professional,White,Self-Employed,fd41b854-31c8-4ea7-9ec4-4ec54bfb7de8
+32.386673,40.736225,HS-grad,Male,Single,Professional,White,Self-Employed,fd41b854-31c8-4ea7-9ec4-4ec54bfb7de8
+31.188025,35.414673,Doctorate,Male,Single,Professional,White,Self-Employed,fd41b854-31c8-4ea7-9ec4-4ec54bfb7de8
+24.182991,34.72259,Some-college,Male,Single,Other/Unknown,White,Other/Unknown,921dcf99-5882-46ca-b213-b25bf8de041b
+24.306028,42.479557,Some-college,Female,Single,Other/Unknown,White,Other/Unknown,921dcf99-5882-46ca-b213-b25bf8de041b
+25.071611,31.959286,Some-college,Male,Single,Service,White,Other/Unknown,921dcf99-5882-46ca-b213-b25bf8de041b
+75.98935,40.684875,Bachelors,Male,Married,White-Collar,White,Self-Employed,b1df65bf-3e12-4989-ae3d-f452916412e9
+77.34056,40.481346,Bachelors,Female,Married,White-Collar,White,Self-Employed,b1df65bf-3e12-4989-ae3d-f452916412e9
+78.30035,53.210903,Bachelors,Male,Married,White-Collar,White,Self-Employed,b1df65bf-3e12-4989-ae3d-f452916412e9

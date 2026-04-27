@@ -1,0 +1,4 @@
+sex,age,priors_count,race,c_charge_degree,query_id
+Male,41.0,1.0,Caucasian,F,c6138ff7-d7aa-4c7d-a160-71ad5b5bb340
+Male,27.0,0.0,Caucasian,F,ca8c22a4-a866-46ae-9e88-923fb4ce4c71
+Female,40.0,0.0,Caucasian,M,a702a9cb-4fad-4c24-a975-2df7222c9047
